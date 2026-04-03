@@ -2,7 +2,7 @@ import {
   CredentialBase,
   CredentialWithPrivateKey,
 } from "./connectors/credentials";
-import { AccessType, ProcessingMode } from "@/lib/types";
+import { AccessType, ConnectorScope, ProcessingMode } from "@/lib/types";
 import { TypedFile } from "./connectors/fileTypes";
 import {
   CREDENTIAL_NAME,
@@ -91,10 +91,14 @@ export function linkCredential(
   accessType?: AccessType,
   groups?: number[],
   autoSyncOptions?: Record<string, any>,
-  processingMode?: ProcessingMode
+  processingMode?: ProcessingMode,
+  scope?: ConnectorScope
 ) {
+  const isUserScoped = scope === "user";
   return fetch(
-    `/api/manage/connector/${connectorId}/credential/${credentialId}`,
+    isUserScoped
+      ? `/api/manage/user/connector/${connectorId}/credential/${credentialId}`
+      : `/api/manage/connector/${connectorId}/credential/${credentialId}`,
     {
       method: "PUT",
       headers: {

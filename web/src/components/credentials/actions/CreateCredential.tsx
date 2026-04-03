@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "@/refresh-components/buttons/Button";
 import { Button as OpalButton } from "@opal/components";
-import { ValidSources, AccessType } from "@/lib/types";
+import { ValidSources, AccessType, ConnectorScope } from "@/lib/types";
 import { FaAccusoft } from "react-icons/fa";
 import { submitCredential } from "@/components/admin/connectors/CredentialForm";
 import { TextFormField } from "@/components/Field";
@@ -30,14 +30,19 @@ const CreateButton = ({
   isSubmitting,
   isAdmin,
   groups,
+  scope,
 }: {
   onClick: () => void;
   isSubmitting: boolean;
   isAdmin: boolean;
   groups: number[];
+  scope: ConnectorScope;
 }) => (
   <OpalButton
-    disabled={isSubmitting || (!isAdmin && groups.length === 0)}
+    disabled={
+      isSubmitting ||
+      (scope === "organization" && !isAdmin && groups.length === 0)
+    }
     onClick={onClick}
     icon={SvgPlusCircle}
   >
@@ -60,6 +65,7 @@ export default function CreateCredential({
   onSwap = async () => null,
   swapConnector,
   refresh = () => null,
+  scope = "organization",
 }: {
   // Source information
   hideSource?: boolean; // hides docs link
@@ -85,6 +91,7 @@ export default function CreateCredential({
 
   // Mutating parent state
   refresh?: () => void;
+  scope?: ConnectorScope;
 }) {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [authMethod, setAuthMethod] = useState<string>();
@@ -124,9 +131,9 @@ export default function CreateCredential({
     try {
       const response = await submitCredential({
         credential_json: filteredCredentialValues,
-        admin_public: true,
-        curator_public: is_public,
-        groups: groups,
+        admin_public: scope === "organization",
+        curator_public: scope === "organization" ? is_public : false,
+        groups: scope === "organization" ? groups : [],
         name: name,
         source: sourceType,
         private_key: privateKey || undefined,
@@ -236,13 +243,14 @@ export default function CreateCredential({
                             setShowAdvancedOptions={setShowAdvancedOptions}
                           />
                         )}
-                        {(showAdvancedOptions || !isAdmin) && (
+                        {scope === "organization" &&
+                          (showAdvancedOptions || !isAdmin) && (
                           <IsPublicGroupSelector
                             formikProps={formikProps}
                             objectName="credential"
                             publicToWhom="Curators"
                           />
-                        )}
+                          )}
                       </div>
                     )}
                   </div>
@@ -253,6 +261,7 @@ export default function CreateCredential({
                     isSubmitting={formikProps.isSubmitting}
                     isAdmin={isAdmin}
                     groups={formikProps.values.groups}
+                    scope={scope}
                   />
                 </div>
               )}

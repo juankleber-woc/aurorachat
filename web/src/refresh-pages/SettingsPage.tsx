@@ -1695,7 +1695,7 @@ function ConnectorsSettings() {
               variant="default"
               prominence="secondary"
               icon={SvgPlug}
-              href="/admin/connectors"
+              href="/app/settings/connectors/add"
               size="sm"
             >
               Add Connector

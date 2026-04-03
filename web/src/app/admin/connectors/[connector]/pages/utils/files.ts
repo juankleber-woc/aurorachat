@@ -1,14 +1,15 @@
 import { toast } from "@/hooks/useToast";
-import { createConnector, runConnector } from "@/lib/connector";
+import { createScopedConnector, runConnector } from "@/lib/connector";
 import { createCredential, linkCredential } from "@/lib/credential";
 import { FileConfig } from "@/lib/connectors/connectors";
-import { AccessType, ValidSources } from "@/lib/types";
+import { AccessType, ConnectorScope, ValidSources } from "@/lib/types";
 
 export const submitFiles = async (
   selectedFiles: File[],
   name: string,
   access_type: string,
-  groups?: number[]
+  groups?: number[],
+  scope: ConnectorScope = "organization"
 ) => {
   const formData = new FormData();
 
@@ -30,7 +31,7 @@ export const submitFiles = async (
   const fileNames = responseJson.file_names as string[];
   const zipMetadataFileId = responseJson.zip_metadata_file_id as string | null;
 
-  const [connectorErrorMsg, connector] = await createConnector<FileConfig>({
+  const [connectorErrorMsg, connector] = await createScopedConnector<FileConfig>({
     name: "FileConnector-" + Date.now(),
     source: ValidSources.File,
     input_type: "load_state",
@@ -42,9 +43,9 @@ export const submitFiles = async (
     refresh_freq: null,
     prune_freq: null,
     indexing_start: null,
-    access_type: access_type,
-    groups: groups,
-  });
+    access_type: access_type as AccessType,
+    groups: scope === "user" ? [] : groups,
+  }, scope);
   if (connectorErrorMsg || !connector) {
     toast.error(`Unable to create connector - ${connectorErrorMsg}`);
     return;
@@ -56,10 +57,10 @@ export const submitFiles = async (
   // associated with it.
   const createCredentialResponse = await createCredential({
     credential_json: {},
-    admin_public: true,
+    admin_public: scope === "organization",
     source: ValidSources.File,
-    curator_public: true,
-    groups: groups,
+    curator_public: scope === "organization",
+    groups: scope === "user" ? [] : groups,
     name,
   });
   if (!createCredentialResponse.ok) {
@@ -74,7 +75,10 @@ export const submitFiles = async (
     credentialId,
     name,
     access_type as AccessType,
-    groups
+    scope === "user" ? [] : groups,
+    undefined,
+    undefined,
+    scope
   );
   if (!credentialResponse.ok) {
     const credentialResponseJson = await credentialResponse.json();

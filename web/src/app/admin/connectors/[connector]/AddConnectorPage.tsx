@@ -18,6 +18,7 @@ import CreateCredential from "@/components/credentials/actions/CreateCredential"
 import ModifyCredential from "@/components/credentials/actions/ModifyCredential";
 import {
   ConfigurableSources,
+  ConnectorScope,
   oauthSupportedSources,
   ValidSources,
 } from "@/lib/types";
@@ -56,7 +57,7 @@ import {
 import { CreateStdOAuthCredential } from "@/components/credentials/actions/CreateStdOAuthCredential";
 import { Spinner } from "@/components/Spinner";
 import { Button } from "@opal/components";
-import { deleteConnector } from "@/lib/connector";
+import { createScopedConnector, deleteConnector } from "@/lib/connector";
 import ConnectorDocsLink from "@/components/admin/connectors/ConnectorDocsLink";
 import Text from "@/refresh-components/texts/Text";
 import { SvgKey, SvgAlertCircle } from "@opal/icons";
@@ -128,8 +129,10 @@ export async function submitConnector<T>(
 
 export default function AddConnector({
   connector,
+  scope = "organization",
 }: {
   connector: ConfigurableSources;
+  scope?: ConnectorScope;
 }) {
   const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
   const [oauthUrl, setOauthUrl] = useState<string | null>(null);
@@ -251,7 +254,11 @@ export default function AddConnector({
   };
 
   const onSuccess = () => {
-    router.push("/admin/indexing/status?message=connector-created");
+    router.push(
+      scope === "user"
+        ? "/app/settings/connectors?message=connector-created"
+        : "/admin/indexing/status?message=connector-created"
+    );
   };
 
   const handleAuthorize = async () => {
@@ -351,9 +358,10 @@ export default function AddConnector({
             advancedConfiguration.refreshFreq,
             advancedConfiguration.pruneFreq,
             advancedConfiguration.indexingStart,
-            values.access_type,
-            groups,
-            name
+            scope === "user" ? "private" : values.access_type,
+            scope === "user" ? [] : groups,
+            name,
+            scope
           );
           if (response) {
             onSuccess();
@@ -367,8 +375,9 @@ export default function AddConnector({
             const response = await submitFiles(
               selectedFiles,
               name,
-              access_type,
-              groups
+              scope === "user" ? "private" : access_type,
+              scope === "user" ? [] : groups,
+              scope
             );
             if (response) {
               onSuccess();
@@ -392,21 +401,32 @@ export default function AddConnector({
           );
 
           const connectorCreationPromise = (async () => {
-            const { message, isSuccess, response } = await submitConnector<any>(
-              {
-                connector_specific_config: transformedConnectorSpecificConfig,
-                input_type: isLoadState(connector) ? "load_state" : "poll", // single case
-                name: name,
-                source: connector,
-                access_type: access_type,
-                refresh_freq: advancedConfiguration.refreshFreq || null,
-                prune_freq: advancedConfiguration.pruneFreq || null,
-                indexing_start: advancedConfiguration.indexingStart || null,
-                groups: groups,
-              },
-              undefined,
-              credentialActivated ? false : true
-            );
+            const connectorPayload = {
+              connector_specific_config: transformedConnectorSpecificConfig,
+              input_type: isLoadState(connector) ? "load_state" : "poll",
+              name: name,
+              source: connector,
+              access_type: scope === "user" ? "private" : access_type,
+              refresh_freq: advancedConfiguration.refreshFreq || null,
+              prune_freq: advancedConfiguration.pruneFreq || null,
+              indexing_start: advancedConfiguration.indexingStart || null,
+              groups: scope === "user" ? [] : groups,
+            };
+
+            const { message, isSuccess, response } =
+              scope === "user"
+                ? await createScopedConnector<any>(connectorPayload, scope).then(
+                    ([error, connectorResponse]) => ({
+                      message: error ?? "Success!",
+                      isSuccess: !error && !!connectorResponse,
+                      response: connectorResponse ?? undefined,
+                    })
+                  )
+                : await submitConnector<any>(
+                    connectorPayload,
+                    undefined,
+                    credentialActivated ? false : true
+                  );
 
             // Store the connector id immediately for potential timeout
             if (response?.id) {
@@ -432,9 +452,11 @@ export default function AddConnector({
                 response.id,
                 credential?.id!,
                 name,
-                access_type,
-                groups,
-                auto_sync_options
+                scope === "user" ? "private" : access_type,
+                scope === "user" ? [] : groups,
+                auto_sync_options,
+                undefined,
+                scope
               );
               if (linkCredentialResponse.ok) {
                 onSuccess();
@@ -534,12 +556,16 @@ export default function AddConnector({
                 <GmailMain />
               ) : (
                 <>
-                  <ModifyCredential
-                    showIfEmpty
-                    accessType={formikProps.values.access_type}
-                    defaultedCredential={currentCredential!}
-                    credentials={credentials}
-                    editableCredentials={editableCredentials}
+                    <ModifyCredential
+                      showIfEmpty
+                      accessType={
+                        scope === "user"
+                          ? "private"
+                          : formikProps.values.access_type
+                      }
+                      defaultedCredential={currentCredential!}
+                      credentials={credentials}
+                      editableCredentials={editableCredentials}
                     onDeleteCredential={onDeleteCredential}
                     onSwitch={onSwap}
                   />
@@ -625,7 +651,12 @@ export default function AddConnector({
                                   close
                                   refresh={refresh}
                                   sourceType={connector}
-                                  accessType={formikProps.values.access_type}
+                                  accessType={
+                                    scope === "user"
+                                      ? "private"
+                                      : formikProps.values.access_type
+                                  }
+                                  scope={scope}
                                   onSwitch={onSwap}
                                   onClose={() =>
                                     setCreateCredentialFormToggle(false)
@@ -649,6 +680,7 @@ export default function AddConnector({
                 values={formikProps.values}
                 config={configuration}
                 connector={connector}
+                scope={scope}
                 currentCredential={
                   currentCredential ||
                   liveGDriveCredential ||

@@ -5,7 +5,7 @@ import { TextFormField } from "@/components/Field";
 import { AdvancedOptionsToggle } from "@/components/AdvancedOptionsToggle";
 import { AccessTypeForm } from "@/components/admin/connectors/AccessTypeForm";
 import { AccessTypeGroupSelector } from "@/components/admin/connectors/AccessTypeGroupSelector";
-import { ConfigurableSources } from "@/lib/types";
+import { ConfigurableSources, ConnectorScope } from "@/lib/types";
 import { Credential } from "@/lib/connectors/credentials";
 import { RenderField } from "./FieldRendering";
 import { useFormikContext } from "formik";
@@ -15,6 +15,7 @@ export interface DynamicConnectionFormProps {
   values: any;
   connector: ConfigurableSources;
   currentCredential: Credential<any> | null;
+  scope?: ConnectorScope;
 }
 
 export default function DynamicConnectionForm({
@@ -22,6 +23,7 @@ export default function DynamicConnectionForm({
   values,
   connector,
   currentCredential,
+  scope = "organization",
 }: DynamicConnectionFormProps) {
   const { setFieldValue } = useFormikContext<any>(); // Get Formik's context functions
 
@@ -69,11 +71,15 @@ export default function DynamicConnectionForm({
           )
       )}
 
-      <AccessTypeForm
-        connector={connector}
-        currentCredential={currentCredential}
-      />
-      <AccessTypeGroupSelector connector={connector} />
+      {scope === "organization" && (
+        <>
+          <AccessTypeForm
+            connector={connector}
+            currentCredential={currentCredential}
+          />
+          <AccessTypeGroupSelector connector={connector} />
+        </>
+      )}
 
       {config.advanced_values.length > 0 &&
         (!config.advancedValuesVisibleCondition ||

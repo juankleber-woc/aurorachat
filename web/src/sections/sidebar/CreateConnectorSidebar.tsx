@@ -4,14 +4,27 @@ import Text from "@/refresh-components/texts/Text";
 import StepSidebar from "@/sections/sidebar/StepSidebarWrapper";
 import { useUser } from "@/providers/UserProvider";
 import { SvgSettings } from "@opal/icons";
+import { ConnectorScope } from "@/lib/types";
 
-export default function Sidebar() {
+export default function Sidebar({
+  scope = "organization",
+}: {
+  scope?: ConnectorScope;
+}) {
   const { formStep, setFormStep, connector, allowAdvanced, allowCreate } =
     useFormContext();
   const noCredential = credentialTemplates[connector] == null;
 
   const { isAdmin } = useUser();
-  const buttonName = isAdmin ? "Admin Page" : "Curator Page";
+  const isUserScoped = scope === "user";
+  const buttonName = isUserScoped
+    ? "Connector Marketplace"
+    : isAdmin
+      ? "Admin Page"
+      : "Curator Page";
+  const buttonHref = isUserScoped
+    ? "/app/settings/connectors/add"
+    : "/admin/add-connector";
 
   const settingSteps = [
     ...(!noCredential ? ["Credential"] : []),
@@ -23,7 +36,7 @@ export default function Sidebar() {
     <StepSidebar
       buttonName={buttonName}
       buttonIcon={SvgSettings}
-      buttonHref="/admin/add-connector"
+      buttonHref={buttonHref}
     >
       <div className="relative">
         {connector != "file" && (

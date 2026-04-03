@@ -61,7 +61,7 @@ export default function Layout({ children }: LayoutProps) {
               )}
               <SidebarTab
                 href="/app/settings/connectors"
-                selected={pathname === "/app/settings/connectors"}
+                selected={pathname.startsWith("/app/settings/connectors")}
               >
                 Connectors
               </SidebarTab>

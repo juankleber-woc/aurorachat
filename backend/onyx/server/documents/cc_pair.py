@@ -37,6 +37,7 @@ from onyx.db.document import get_documents_for_cc_pair
 from onyx.db.engine.sql_engine import get_session
 from onyx.db.enums import AccessType
 from onyx.db.enums import ConnectorCredentialPairStatus
+from onyx.db.enums import ConnectorScope
 from onyx.db.enums import IndexingStatus
 from onyx.db.enums import PermissionSyncStatus
 from onyx.db.index_attempt import count_index_attempt_errors_for_cc_pair
@@ -613,6 +614,64 @@ def associate_credential_to_connector(
     except Exception as e:
         logger.exception(f"Unexpected error: {e}")
 
+        raise HTTPException(status_code=500, detail="Unexpected error")
+
+
+@router.put(
+    "/user/connector/{connector_id}/credential/{credential_id}",
+    tags=PUBLIC_API_TAGS,
+)
+def associate_user_credential_to_connector(
+    connector_id: int,
+    credential_id: int,
+    metadata: ConnectorCredentialPairMetadata,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+    tenant_id: str = Depends(get_current_tenant_id),
+) -> StatusResponse[int]:
+    """Associate a user-owned credential to a personal connector."""
+
+    try:
+        response = add_credential_to_connector(
+            db_session=db_session,
+            user=user,
+            connector_id=connector_id,
+            credential_id=credential_id,
+            cc_pair_name=metadata.name,
+            access_type=AccessType.PRIVATE,
+            auto_sync_options=metadata.auto_sync_options,
+            groups=None,
+            processing_mode=metadata.processing_mode,
+            scope=ConnectorScope.USER,
+        )
+
+        client_app.send_task(
+            OnyxCeleryTask.CHECK_FOR_INDEXING,
+            priority=OnyxCeleryPriority.HIGH,
+            kwargs={"tenant_id": tenant_id},
+        )
+
+        logger.info(
+            "associate_user_credential_to_connector - running check_for_indexing: "
+            f"cc_pair={response.data}"
+        )
+
+        return response
+    except ValidationError as e:
+        delete_connector(db_session, connector_id)
+        db_session.commit()
+
+        raise HTTPException(
+            status_code=400, detail="Connector validation error: " + str(e)
+        )
+    except IntegrityError as e:
+        logger.error(f"IntegrityError: {e}")
+        delete_connector(db_session, connector_id)
+        db_session.commit()
+
+        raise HTTPException(status_code=400, detail="Name must be unique")
+    except Exception as e:
+        logger.exception(f"Unexpected error: {e}")
         raise HTTPException(status_code=500, detail="Unexpected error")
 
 

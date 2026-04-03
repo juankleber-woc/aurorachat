@@ -4,6 +4,7 @@ import {
   ConnectorBase,
   ConnectorSnapshot,
 } from "./connectors/connectors";
+import { AccessType, ConnectorScope } from "./types";
 async function handleResponse(
   response: Response
 ): Promise<[string | null, any]> {
@@ -30,6 +31,26 @@ export async function createConnector<T>(
   connector: ConnectorBase<T>
 ): Promise<[string | null, Connector<T> | null]> {
   const response = await fetch(`/api/manage/admin/connector`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(connector),
+  });
+  return handleResponse(response);
+}
+
+export async function createScopedConnector<T>(
+  connector: ConnectorBase<T> & {
+    access_type?: AccessType;
+    groups?: number[];
+  },
+  scope: ConnectorScope = "organization"
+): Promise<[string | null, Connector<T> | null]> {
+  const endpoint =
+    scope === "user" ? `/api/manage/user/connector-definition` : `/api/manage/admin/connector`;
+
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

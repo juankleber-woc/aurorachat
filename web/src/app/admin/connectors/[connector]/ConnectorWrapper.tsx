@@ -2,9 +2,7 @@
 
 import {
   ConfigurableSources,
-  FederatedConnectorDetail,
-  federatedSourceToRegularSource,
-  ValidSources,
+  ConnectorScope,
 } from "@/lib/types";
 import AddConnector from "./AddConnectorPage";
 import { FormProvider } from "@/components/context/FormContext";
@@ -14,18 +12,14 @@ import Button from "@/refresh-components/buttons/Button";
 import { isValidSource, getSourceMetadata } from "@/lib/sources";
 import { FederatedConnectorForm } from "@/components/admin/federated/FederatedConnectorForm";
 import { useSearchParams } from "next/navigation";
-import useSWR from "swr";
-import { errorHandlingFetcher } from "@/lib/fetcher";
-import { buildSimilarCredentialInfoURL } from "@/app/admin/connector/[ccPairId]/lib";
-import { Credential } from "@/lib/connectors/credentials";
-import { useFederatedConnectors } from "@/lib/hooks";
-import Text from "@/refresh-components/texts/Text";
 import { useToastFromQuery } from "@/hooks/useToast";
 
 export default function ConnectorWrapper({
   connector,
+  scope = "organization",
 }: {
   connector: ConfigurableSources;
+  scope?: ConnectorScope;
 }) {
   const searchParams = useSearchParams();
   const mode = searchParams?.get("mode"); // 'federated' or 'regular'
@@ -42,7 +36,7 @@ export default function ConnectorWrapper({
     return (
       <FormProvider connector={connector}>
         <div className="flex justify-center w-full h-full">
-          <Sidebar />
+          <Sidebar scope={scope} />
           <div className="mt-12 w-full max-w-3xl mx-auto">
             <div className="mx-auto flex flex-col gap-y-2">
               <HeaderTitle>
@@ -50,7 +44,14 @@ export default function ConnectorWrapper({
               </HeaderTitle>
               {/* TODO(@raunakab): migrate to opal Button once className/iconClassName is resolved */}
               <Button
-                onClick={() => window.open("/admin/indexing/status", "_self")}
+                onClick={() =>
+                  window.open(
+                    scope === "user"
+                      ? "/app/settings/connectors"
+                      : "/admin/indexing/status",
+                    "_self"
+                  )
+                }
                 className="mr-auto"
               >
                 {" "}
@@ -67,7 +68,8 @@ export default function ConnectorWrapper({
   const supportsFederated = sourceMetadata.federated === true;
 
   // Only show federated form if explicitly requested via URL parameter
-  const showFederatedForm = mode === "federated" && supportsFederated;
+  const showFederatedForm =
+    scope === "organization" && mode === "federated" && supportsFederated;
 
   // For federated form, use the specialized form without FormProvider
   if (showFederatedForm) {
@@ -84,9 +86,9 @@ export default function ConnectorWrapper({
   return (
     <FormProvider connector={connector}>
       <div className="flex justify-center w-full h-full">
-        <Sidebar />
+        <Sidebar scope={scope} />
         <div className="mt-12 w-full max-w-3xl mx-auto">
-          <AddConnector connector={connector} />
+          <AddConnector connector={connector} scope={scope} />
         </div>
       </div>
     </FormProvider>

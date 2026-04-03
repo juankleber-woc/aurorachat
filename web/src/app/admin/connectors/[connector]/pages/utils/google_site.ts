@@ -1,8 +1,8 @@
 import { toast } from "@/hooks/useToast";
-import { createConnector, runConnector } from "@/lib/connector";
+import { createScopedConnector, runConnector } from "@/lib/connector";
 import { linkCredential } from "@/lib/credential";
 import { GoogleSitesConfig } from "@/lib/connectors/connectors";
-import { ValidSources } from "@/lib/types";
+import { ConnectorScope, ValidSources } from "@/lib/types";
 
 export const submitGoogleSite = async (
   selectedFiles: File[],
@@ -12,7 +12,8 @@ export const submitGoogleSite = async (
   indexingStart: Date,
   access_type: string,
   groups: number[],
-  name?: string
+  name?: string,
+  scope: ConnectorScope = "organization"
 ) => {
   const uploadCreateAndTriggerConnector = async () => {
     const formData = new FormData();
@@ -51,7 +52,7 @@ export const submitGoogleSite = async (
     }
 
     const [connectorErrorMsg, connector] =
-      await createConnector<GoogleSitesConfig>({
+      await createScopedConnector<GoogleSitesConfig>({
         name: name ? name : `GoogleSitesConnector-${base_url}`,
         source: ValidSources.GoogleSites,
         input_type: "load_state",
@@ -59,11 +60,12 @@ export const submitGoogleSite = async (
           base_url: base_url,
           zip_path: filePath,
         },
-        access_type: access_type,
+        access_type: access_type as any,
         refresh_freq: refreshFreq,
         prune_freq: pruneFreq,
         indexing_start: indexingStart,
-      });
+        groups: scope === "user" ? [] : groups,
+      }, scope);
     if (connectorErrorMsg || !connector) {
       toast.error(`Unable to create connector - ${connectorErrorMsg}`);
       return false;
@@ -74,7 +76,10 @@ export const submitGoogleSite = async (
       0,
       base_url,
       undefined,
-      groups
+      scope === "user" ? [] : groups,
+      undefined,
+      undefined,
+      scope
     );
     if (!credentialResponse.ok) {
       const credentialResponseJson = await credentialResponse.json();

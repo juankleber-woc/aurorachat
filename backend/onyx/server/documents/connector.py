@@ -2154,6 +2154,31 @@ class UserConnectorCreateRequest(BaseModel):
     indexing_start: datetime | None = None
 
 
+@router.post("/user/connector-definition", tags=PUBLIC_API_TAGS)
+def create_user_connector_definition(
+    connector_data: ConnectorBase,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> ConnectorSnapshot:
+    """Create a connector definition for a personal connector.
+
+    The connector is created first and then associated to a user-owned credential
+    through the user-scoped cc-pair endpoint.
+    """
+    if user is None:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    try:
+        _validate_connector_allowed(connector_data.source)
+        return create_connector(
+            db_session=db_session,
+            connector_data=connector_data,
+        )
+    except ValueError as e:
+        logger.error(f"Error creating user connector definition: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 class UserConnectorResponse(BaseModel):
     cc_pair_id: int
     connector_id: int
