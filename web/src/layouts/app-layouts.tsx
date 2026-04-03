@@ -305,7 +305,7 @@ function Header() {
 
       <div
         className={cn(
-          "w-full flex flex-row flex-wrap justify-center items-center px-4",
+          "w-full flex flex-row flex-wrap justify-center items-center gap-y-2 px-3 sm:px-4",
           // # Note (@raunakab):
           //
           // We add an additional top margin to align this header with the `LogoSection` inside of the App-Sidebar.
@@ -318,7 +318,7 @@ function Header() {
           - (mobile) sidebar toggle
           - app-mode (for Unified S+C [EE gated])
         */}
-        <div className="flex-1 flex flex-row items-center gap-2 h-[3.3rem]">
+        <div className="flex h-[3.3rem] min-w-0 flex-1 flex-row items-center gap-2">
           {isMobile && (
             <Button
               prominence="internal"
@@ -378,7 +378,7 @@ function Header() {
         */}
         <div
           className={cn(
-            "flex flex-col items-center overflow-hidden",
+            "flex min-w-0 flex-col items-center overflow-hidden",
             pageWithHeaderContent && customHeaderContent
               ? "order-last basis-full py-2 sm:py-0 sm:order-none sm:basis-auto sm:flex-1"
               : "flex-1"
@@ -394,7 +394,7 @@ function Header() {
           - share button
           - more-options buttons
         */}
-        <div className="flex flex-1 justify-end items-center h-[3.3rem]">
+        <div className="flex h-[3.3rem] min-w-0 flex-1 items-center justify-end">
           {appFocus.isChat() && currentChatSession && (
             <FrostedDiv className="flex shrink flex-row items-center">
               <Button
@@ -472,7 +472,7 @@ function Footer() {
   return (
     <footer
       className={cn(
-        "relative w-full flex flex-row justify-center items-center gap-2 px-2 mt-auto",
+        "relative mt-auto flex w-full flex-row items-center justify-center gap-2 px-3 sm:px-2",
         // # Note (from @raunakab):
         //
         // The conditional rendering of vertical padding based on the current page is intentional.
@@ -588,7 +588,7 @@ function Root({ children, enableBackground }: AppRootProps) {
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       className={cn(
-        "@container flex flex-col h-full w-full relative overflow-hidden",
+        "@container relative flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden",
         showBackground && "bg-cover bg-center bg-fixed"
       )}
       style={
@@ -641,7 +641,7 @@ function Root({ children, enableBackground }: AppRootProps) {
       <div className="z-app-layout">
         {!appFocus.isSharedChat() && <Header />}
       </div>
-      <div className="z-app-layout flex-1 overflow-auto h-full w-full">
+      <div className="z-app-layout flex-1 overflow-auto h-full w-full min-w-0">
         {children}
       </div>
       <div className="z-app-layout">

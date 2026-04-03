@@ -669,16 +669,16 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
         >
           {({ getRootProps }) => (
             <div
-              className="h-full w-full flex flex-col items-center outline-none relative"
+              className="relative flex h-full w-full min-w-0 flex-col items-center outline-none"
               {...getRootProps({ tabIndex: -1 })}
             >
               {/* Main content grid — 3 rows, animated */}
               <div
-                className="flex-1 w-full grid min-h-0 transition-[grid-template-rows] duration-150 ease-in-out"
+                className="flex-1 grid min-h-0 w-full min-w-0 transition-[grid-template-rows] duration-150 ease-in-out"
                 style={gridStyle}
               >
                 {/* ── Top row: ChatUI / WelcomeMessage / ProjectUI ── */}
-                <div className="row-start-1 min-h-0 overflow-hidden flex flex-col items-center">
+                <div className="row-start-1 flex min-h-0 min-w-0 flex-col items-center overflow-hidden">
                   {/* ChatUI */}
                   <Fade
                     show={
@@ -755,7 +755,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
 
                   {/* ProjectUI */}
                   {appFocus.isProject() && (
-                    <div className="w-full max-h-[50vh] overflow-y-auto overscroll-y-none">
+                    <div className="w-full max-h-[60dvh] overflow-y-auto overscroll-y-none md:max-h-[50vh]">
                       <ProjectContextPanel
                         projectTokenCount={projectContextTokenCount}
                         availableContextTokens={availableContextTokens}
@@ -770,7 +770,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                       (appFocus.isNewSession() || appFocus.isAgent()) &&
                       (state.phase === "idle" || state.phase === "classifying")
                     }
-                    className="w-full flex-1 flex flex-col items-center justify-end"
+                    className="flex w-full min-w-0 flex-1 flex-col items-center justify-end"
                   >
                     <WelcomeMessage
                       agent={liveAgent}
@@ -783,11 +783,11 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                 {/* ── Middle-center: AppInputBar ── */}
                 <div
                   className={cn(
-                    "row-start-2 flex flex-col items-center px-4",
+                    "row-start-2 flex flex-col items-center px-3 sm:px-4",
                     sessionFetchError && "hidden"
                   )}
                 >
-                  <div className="relative w-full max-w-[var(--app-page-main-content-width)] flex flex-col">
+                  <div className="relative flex w-full max-w-[var(--app-page-main-content-width)] min-w-0 flex-col">
                     {/* Scroll to bottom button - positioned absolutely above AppInputBar */}
                     {appFocus.isChat() && showScrollButton && (
                       <div className="absolute top-[-3.5rem] self-center">

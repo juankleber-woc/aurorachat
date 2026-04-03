@@ -35,7 +35,7 @@ export default function Layout({ children }: LayoutProps) {
 
         <SettingsLayouts.Body>
           <Section
-            flexDirection="row"
+            flexDirection="column"
             justifyContent="start"
             alignItems="start"
             gap={1.5}
@@ -43,7 +43,7 @@ export default function Layout({ children }: LayoutProps) {
             {/* Left: Tab Navigation */}
             <div
               data-testid="settings-left-tab-navigation"
-              className="flex flex-col px-2 min-w-[12.5rem]"
+              className="grid w-full grid-cols-2 gap-2 px-0 sm:grid-cols-2 md:min-w-[12.5rem] md:max-w-[12.5rem] md:grid-cols-1 md:px-2"
             >
               <SidebarTab
                 href="/app/settings/general"
@@ -74,7 +74,7 @@ export default function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Right: Tab Content */}
-            {children}
+            <div className="w-full min-w-0">{children}</div>
           </Section>
         </SettingsLayouts.Body>
       </SettingsLayouts.Root>

@@ -86,12 +86,12 @@ function SettingsRoot({ width = "md", ...props }: SettingsRootProps) {
   return (
     <div
       id="page-wrapper-scroll-container"
-      className="w-full h-full flex flex-col items-center overflow-y-auto"
+      className="flex h-full w-full flex-col items-center overflow-y-auto px-0 sm:px-4"
     >
       {/* WARNING: The id="page-wrapper-scroll-container" above is used by SettingsHeader
           to detect scroll position and show/hide the scroll shadow.
           DO NOT REMOVE this ID without updating SettingsHeader accordingly. */}
-      <div className={cn("h-full", widthClasses[width])}>
+      <div className={cn("h-full w-full", widthClasses[width])}>
         <div {...props} />
       </div>
     </div>
@@ -232,9 +232,9 @@ function SettingsHeader({
 
       <Spacer vertical rem={2.5} />
 
-      <div className="flex flex-col gap-6 px-4">
-        <div className="flex w-full justify-between">
-          <div aria-label="admin-page-title">
+      <div className="flex flex-col gap-4 px-4 sm:gap-6">
+        <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div aria-label="admin-page-title" className="min-w-0">
             <Content
               icon={Icon}
               title={title}
@@ -243,7 +243,11 @@ function SettingsHeader({
               variant="heading"
             />
           </div>
-          {rightChildren}
+          {rightChildren ? (
+            <div className="flex w-full flex-wrap justify-start gap-2 sm:w-auto sm:justify-end">
+              {rightChildren}
+            </div>
+          ) : null}
         </div>
 
         {children}
@@ -306,7 +310,7 @@ function SettingsBody(
 ) {
   return (
     <div
-      className="pt-6 pb-[4.5rem] px-4 flex flex-col gap-8 w-full"
+      className="flex w-full flex-col gap-6 px-4 pb-[4.5rem] pt-6 sm:gap-8"
       {...props}
     />
   );

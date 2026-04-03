@@ -12,8 +12,8 @@ export default function AuthFlowContainer({
   footerContent?: React.ReactNode;
 }) {
   return (
-    <div className="p-4 flex flex-col items-center justify-center min-h-screen bg-background">
-      <div className="w-full max-w-md flex items-start flex-col bg-background-tint-00 rounded-16 shadow-lg shadow-02 p-6">
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-6 sm:p-4">
+      <div className="flex w-full max-w-md flex-col items-start rounded-16 bg-background-tint-00 p-5 shadow-lg shadow-02 sm:p-6">
         <Image
           src={auroraLogo}
           alt="AuroraChat logo"
@@ -25,7 +25,7 @@ export default function AuthFlowContainer({
         <div className="w-full mt-3">{children}</div>
       </div>
       {authState === "login" && (
-        <div className="text-sm mt-6 text-center w-full text-text-03 mainUiBody mx-auto">
+        <div className="mx-auto mt-6 w-full max-w-md px-2 text-center text-sm text-text-03 mainUiBody">
           {footerContent ?? (
             <>
               New to AuroraChat?{" "}
@@ -40,7 +40,7 @@ export default function AuthFlowContainer({
         </div>
       )}
       {authState === "signup" && (
-        <div className="text-sm mt-6 text-center w-full text-text-03 mainUiBody mx-auto">
+        <div className="mx-auto mt-6 w-full max-w-md px-2 text-center text-sm text-text-03 mainUiBody">
           Already have an account?{" "}
           <Link
             href="/auth/login?autoRedirectToSignup=false"
