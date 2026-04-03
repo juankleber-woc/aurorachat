@@ -9,7 +9,8 @@ import { cn } from "@/lib/utils";
 import Text from "@/refresh-components/texts/Text";
 import Truncated from "@/refresh-components/texts/Truncated";
 import { useMemo } from "react";
-import { SvgOnyxLogo, SvgOnyxLogoTyped } from "@opal/icons";
+import Image from "next/image";
+import auroraLogo from "@public/aurora-logo.png";
 
 export interface LogoProps {
   folded?: boolean;
@@ -21,7 +22,8 @@ export default function Logo({ folded, size, className }: LogoProps) {
   const resolvedSize = size ?? DEFAULT_LOGO_SIZE_PX;
   const settings = useSettingsContext();
   const logoDisplayStyle = settings.enterpriseSettings?.logo_display_style;
-  const applicationName = settings.enterpriseSettings?.application_name;
+  const applicationName =
+    settings.enterpriseSettings?.application_name || "AuroraChat";
 
   // Cache-buster: the logo URL never changes (/api/enterprise-settings/logo)
   // so the browser serves the in-memory cached image even after an admin
@@ -34,26 +36,32 @@ export default function Logo({ folded, size, className }: LogoProps) {
     [settings.enterpriseSettings]
   );
 
-  const logo = settings.enterpriseSettings?.use_custom_logo ? (
+  const logo = (
     <div
       className={cn(
-        "aspect-square rounded-full overflow-hidden relative flex-shrink-0",
+        "relative aspect-square overflow-hidden rounded-full ring-1 ring-[var(--border-02)] shadow-01 flex-shrink-0 bg-background-tint-00",
         className
       )}
-      style={{ height: resolvedSize }}
+      style={{ height: resolvedSize, width: resolvedSize }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        alt="Logo"
-        src={`/api/enterprise-settings/logo?v=${logoBuster}`}
-        className="object-cover object-center w-full h-full"
-      />
+      {settings.enterpriseSettings?.use_custom_logo ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          alt="Logo"
+          src={`/api/enterprise-settings/logo?v=${logoBuster}`}
+          className="object-cover object-center w-full h-full"
+        />
+      ) : (
+        <Image
+          alt="AuroraChat logo"
+          src={auroraLogo}
+          fill
+          sizes={`${resolvedSize}px`}
+          className="object-cover object-center"
+          priority
+        />
+      )}
     </div>
-  ) : (
-    <SvgOnyxLogo
-      size={resolvedSize}
-      className={cn("flex-shrink-0", className)}
-    />
   );
 
   const renderNameAndPoweredBy = (opts: {
@@ -66,9 +74,7 @@ export default function Logo({ folded, size, className }: LogoProps) {
         {!folded && (
           /* H3 text is 4px larger (28px) than the Logo icon (24px), so negative margin hack. */
           <div className="flex flex-1 flex-col -mt-0.5">
-            {opts.includeName && (
-              <Truncated headingH3>{applicationName}</Truncated>
-            )}
+            {opts.includeName && <Truncated headingH3>{applicationName}</Truncated>}
             {!NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED && (
               <Text
                 secondaryBody
@@ -99,11 +105,8 @@ export default function Logo({ folded, size, className }: LogoProps) {
   return applicationName ? (
     renderNameAndPoweredBy({ includeLogo: true, includeName: true })
   ) : folded ? (
-    <SvgOnyxLogo
-      size={resolvedSize}
-      className={cn("flex-shrink-0", className)}
-    />
+    logo
   ) : (
-    <SvgOnyxLogoTyped size={resolvedSize} className={className} />
+    renderNameAndPoweredBy({ includeLogo: true, includeName: true })
   );
 }

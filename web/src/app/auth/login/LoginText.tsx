@@ -13,7 +13,7 @@ export default function LoginText() {
         {(settings && settings?.enterpriseSettings?.application_name) || "AuroraChat"}
       </Text>
       <Text as="p" text03 mainUiMuted>
-        Your open source AI platform for work
+        Your AI workspace for work
       </Text>
     </div>
   );

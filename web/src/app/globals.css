@@ -31,11 +31,11 @@
 @layer base {
   /* BORDER RADII */
   :root {
-    --border-radius-02: 0.125rem;
-    --border-radius-04: 0.25rem;
-    --border-radius-08: 0.5rem;
-    --border-radius-12: 0.75rem;
-    --border-radius-16: 1rem;
+    --border-radius-02: 0.25rem;
+    --border-radius-04: 0.5rem;
+    --border-radius-08: 0.75rem;
+    --border-radius-12: 1rem;
+    --border-radius-16: 1.25rem;
     --border-radius-full: 64rem;
   }
 
@@ -52,8 +52,35 @@
 
   body {
     @apply bg-background text-foreground;
+    background:
+      radial-gradient(
+        circle at top left,
+        rgba(206, 78, 225, 0.18),
+        transparent 32%
+      ),
+      radial-gradient(
+        circle at top right,
+        rgba(73, 211, 255, 0.12),
+        transparent 26%
+      ),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 240, 248, 0.96));
     overscroll-behavior-y: none;
     overflow-anchor: none;
+  }
+
+  .dark body {
+    background:
+      radial-gradient(
+        circle at top left,
+        rgba(199, 73, 246, 0.26),
+        transparent 30%
+      ),
+      radial-gradient(
+        circle at 85% 15%,
+        rgba(56, 189, 248, 0.16),
+        transparent 24%
+      ),
+      linear-gradient(180deg, rgba(8, 4, 12, 1), rgba(16, 7, 24, 0.98));
   }
 
   form {
@@ -177,18 +204,22 @@
 
 /* Font Family Variables */
 :root {
-  --font-hanken-grotesk: "Hanken Grotesk", -apple-system, BlinkMacSystemFont,
+  --font-hanken-grotesk: var(--font-inter), -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, sans-serif;
   --font-dm-mono: "DM Mono", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono",
     Consolas, "Courier New", monospace;
-  --font-kh-teka: "KH Teka", -apple-system, BlinkMacSystemFont, "Segoe UI",
+  --font-kh-teka: var(--font-sora), -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, sans-serif;
+  --font-inter-body: var(--font-inter), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --font-sora-display: var(--font-sora), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
 }
 
 /* HEADING STYLES */
 
 .font-heading-h1 {
-  font-family: var(--font-hanken-grotesk);
+  font-family: var(--font-sora-display);
   font-size: 48px;
   font-weight: 600;
   line-height: 64px;
@@ -196,7 +227,7 @@
 }
 
 .font-heading-h2 {
-  font-family: var(--font-hanken-grotesk);
+  font-family: var(--font-sora-display);
   font-size: 24px;
   font-weight: 600;
   line-height: 36px;
@@ -204,7 +235,7 @@
 }
 
 .font-heading-h3 {
-  font-family: var(--font-hanken-grotesk);
+  font-family: var(--font-sora-display);
   font-size: 18px;
   font-weight: 600;
   line-height: 28px;
@@ -212,7 +243,7 @@
 }
 
 .font-heading-h3-muted {
-  font-family: var(--font-hanken-grotesk);
+  font-family: var(--font-sora-display);
   font-size: 18px;
   font-weight: 500;
   line-height: 28px;
@@ -222,7 +253,7 @@
 /* MAIN CONTENT STYLES */
 
 .font-main-content-body {
-  font-family: var(--font-hanken-grotesk);
+  font-family: var(--font-inter-body);
   font-size: 16px;
   font-weight: 450;
   line-height: 24px;
@@ -234,7 +265,7 @@
 }
 
 .font-main-content-emphasis {
-  font-family: var(--font-hanken-grotesk);
+  font-family: var(--font-inter-body);
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;

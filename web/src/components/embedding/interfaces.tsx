@@ -364,7 +364,7 @@ export const getTitleForRerankType = (type: string) => {
     case "intfloat":
       return "Microsoft";
     default:
-      return "Open Source";
+      return "Community";
   }
 };
 

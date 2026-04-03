@@ -9,7 +9,7 @@ import { PHProvider } from "./providers";
 import { Suspense } from "react";
 import PostHogPageView from "./PostHogPageView";
 import Script from "next/script";
-import { DM_Mono, Hanken_Grotesk } from "next/font/google";
+import { DM_Mono, Inter, Sora } from "next/font/google";
 import { WebVitals } from "./web-vitals";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,9 +20,22 @@ import CustomAnalyticsScript from "@/providers/CustomAnalyticsScript";
 import ProductGatingWrapper from "@/providers/ProductGatingWrapper";
 import SWRConfigProvider from "@/providers/SWRConfigProvider";
 
-const hankenGrotesk = Hanken_Grotesk({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-hanken-grotesk",
+  variable: "--font-inter",
+  display: "swap",
+  fallback: [
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Roboto",
+    "sans-serif",
+  ],
+});
+
+const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-sora",
   display: "swap",
   fallback: [
     "-apple-system",
@@ -68,7 +81,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(hankenGrotesk.variable, dmMono.variable)}
+      className={cn(inter.variable, sora.variable, dmMono.variable)}
       suppressHydrationWarning
     >
       <head>
@@ -94,7 +107,7 @@ export default function RootLayout({
         )}
       </head>
 
-      <body className={`relative font-hanken`}>
+      <body className={`relative font-sans`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

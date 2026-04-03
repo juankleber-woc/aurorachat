@@ -17,6 +17,7 @@ import { useQueryController } from "@/providers/QueryControllerProvider";
 import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import { useAppSidebarContext } from "@/providers/AppSidebarProvider";
 import useScreenSize from "@/hooks/useScreenSize";
+import { APP_SLOGAN } from "@/lib/constants";
 
 const footerMarkdownComponents = {
   p: ({ children }: { children?: React.ReactNode }) => (
@@ -70,7 +71,7 @@ export default function NRFChrome() {
 
   const customFooterContent =
     settings?.enterpriseSettings?.custom_lower_disclaimer_content ||
-    `[AuroraChat ${settings?.webVersion || "dev"}](https://www.aurorachat.app/) - Open Source AI Platform`;
+    `[AuroraChat ${settings?.webVersion || "dev"}](https://www.aurorachat.app/) - ${APP_SLOGAN}`;
 
   const showModeToggle =
     isPaidEnterpriseFeaturesEnabled &&
