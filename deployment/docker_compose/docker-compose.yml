@@ -423,6 +423,9 @@ services:
       # forming a cluster and waiting for other nodes to become live.
       - discovery.type=single-node
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
+      # Disable disk-based shard allocation watermarks to prevent index_create_block_exception
+      # in environments where disk % thresholds are exceeded even with ample free space
+      - cluster.routing.allocation.disk.threshold_enabled=false
       # This and the JVM config below come from the example in https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/
       # We do this to avoid unstable performance from page swaps.
       - bootstrap.memory_lock=true # Disable JVM heap memory swapping.
