@@ -22,6 +22,7 @@ DEPLOY_SERVICES="${DEPLOY_SERVICES:-}"
 RUN_ID="$(date '+%Y%m%d-%H%M%S')"
 LOG_FILE=""
 PREVIOUS_COMMIT=""
+STASH_NAME=""
 
 log() {
   printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"
@@ -121,8 +122,17 @@ PREVIOUS_COMMIT=$PREVIOUS_COMMIT
 BUILD_SERVICES=$BUILD_SERVICES
 DEPLOY_SERVICES=$DEPLOY_SERVICES
 LOG_FILE=$LOG_FILE
+STASH_NAME=$STASH_NAME
 EOF
   log "Saved deploy state to $state_file."
+}
+
+stash_local_changes_if_needed() {
+  if [[ -n "$(git status --porcelain)" ]]; then
+    STASH_NAME="pre-deploy-$RUN_ID"
+    log "Found local changes in the host repo. Stashing them as $STASH_NAME before updating main."
+    run git stash push -u -m "$STASH_NAME"
+  fi
 }
 
 wait_for_healthcheck() {
@@ -203,6 +213,7 @@ main() {
 
   if [[ "$SKIP_GIT_PULL" != "1" ]]; then
     log "Updating repository from origin/$BRANCH."
+    stash_local_changes_if_needed
     run git fetch --all --prune
     run git checkout "$BRANCH"
     run git pull --ff-only origin "$BRANCH"
