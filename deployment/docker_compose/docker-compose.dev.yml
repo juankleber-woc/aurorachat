@@ -43,9 +43,6 @@ services:
   opensearch:
     ports:
       - "9200:9200"
-    # Rootless Docker can reject the base OpenSearch ulimit settings, so clear
-    # the inherited block entirely in the dev override.
-    ulimits: !reset null
     environment:
       - bootstrap.memory_lock=false
 
