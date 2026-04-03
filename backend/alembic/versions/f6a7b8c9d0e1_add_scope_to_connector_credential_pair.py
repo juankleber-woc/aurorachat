@@ -1,8 +1,8 @@
 """add scope to connector_credential_pair
 
-Revision ID: a1b2c3d4e5f6
-Revises: f1ca58b2f2ec
-Create Date: 2026-04-03 00:00:00.000000
+Revision ID: f6a7b8c9d0e1
+Revises: 503883791c39, a1b2c3d4e5f6
+Create Date: 2026-04-03 20:30:00.000000
 
 """
 
@@ -11,8 +11,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "a1b2c3d4e5f6"
-down_revision = "f1ca58b2f2ec"
+revision = "f6a7b8c9d0e1"
+down_revision = ("503883791c39", "a1b2c3d4e5f6")
 branch_labels = None
 depends_on = None
 
