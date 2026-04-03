@@ -237,7 +237,7 @@ function SubscriptionCard({
               Your plan is managed through sales.
               <br />
               <a
-                href="mailto:support@onyx.app?subject=Billing%20change%20request"
+                href="mailto:support@aurorachat.app?subject=License%20change%20request"
                 className="underline"
               >
                 Contact billing

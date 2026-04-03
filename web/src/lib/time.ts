@@ -1,4 +1,5 @@
 import { User } from "@/lib/types";
+import { getCurrentUILocale, isPortugueseLocale } from "@/lib/ui-locale";
 
 const conditionallyAddPlural = (noun: string, cnt: number) => {
   if (cnt > 1) {
@@ -6,6 +7,17 @@ const conditionallyAddPlural = (noun: string, cnt: number) => {
   }
   return noun;
 };
+
+const formatRelativeUnit = (
+  count: number,
+  enSingular: string,
+  ptSingular: string,
+  ptPlural: string,
+  locale = getCurrentUILocale()
+) =>
+  isPortugueseLocale(locale)
+    ? `${count} ${count === 1 ? ptSingular : ptPlural} atrás`
+    : `${count} ${conditionallyAddPlural(enSingular, count)} ago`;
 
 export const timeAgo = (
   dateString: string | undefined | null
@@ -17,44 +29,51 @@ export const timeAgo = (
   const date = new Date(dateString);
   const now = new Date();
   const secondsDiff = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const locale = getCurrentUILocale();
 
   if (secondsDiff < 60) {
-    return `${secondsDiff} ${conditionallyAddPlural(
+    return formatRelativeUnit(
+      secondsDiff,
       "second",
-      secondsDiff
-    )} ago`;
+      "segundo",
+      "segundos",
+      locale
+    );
   }
 
   const minutesDiff = Math.floor(secondsDiff / 60);
   if (minutesDiff < 60) {
-    return `${minutesDiff} ${conditionallyAddPlural(
+    return formatRelativeUnit(
+      minutesDiff,
       "minute",
-      secondsDiff
-    )} ago`;
+      "minuto",
+      "minutos",
+      locale
+    );
   }
 
   const hoursDiff = Math.floor(minutesDiff / 60);
   if (hoursDiff < 24) {
-    return `${hoursDiff} ${conditionallyAddPlural("hour", hoursDiff)} ago`;
+    return formatRelativeUnit(hoursDiff, "hour", "hora", "horas", locale);
   }
 
   const daysDiff = Math.floor(hoursDiff / 24);
   if (daysDiff < 30) {
-    return `${daysDiff} ${conditionallyAddPlural("day", daysDiff)} ago`;
+    return formatRelativeUnit(daysDiff, "day", "dia", "dias", locale);
   }
 
   const weeksDiff = Math.floor(daysDiff / 7);
   if (weeksDiff < 4) {
-    return `${weeksDiff} ${conditionallyAddPlural("week", weeksDiff)} ago`;
+    return formatRelativeUnit(weeksDiff, "week", "semana", "semanas", locale);
   }
 
   const monthsDiff = Math.floor(daysDiff / 30);
   if (monthsDiff < 12) {
-    return `${monthsDiff} ${conditionallyAddPlural("month", monthsDiff)} ago`;
+    return formatRelativeUnit(monthsDiff, "month", "mês", "meses", locale);
   }
 
   const yearsDiff = Math.floor(monthsDiff / 12);
-  return `${yearsDiff} ${conditionallyAddPlural("year", yearsDiff)} ago`;
+  return formatRelativeUnit(yearsDiff, "year", "ano", "anos", locale);
 };
 
 export function localizeAndPrettify(dateString: string) {
@@ -63,19 +82,13 @@ export function localizeAndPrettify(dateString: string) {
 }
 
 export function humanReadableFormat(dateString: string): string {
-  // Create a Date object from the dateString
   const date = new Date(dateString);
-
-  // Use Intl.DateTimeFormat to format the date
-  // Specify the locale as 'en-US' and options for month, day, and year
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    month: "long", // full month name
-    day: "numeric", // numeric day
-    year: "numeric", // numeric year
-  });
-
-  // Format the date and return it
-  return formatter.format(date);
+  const locale = getCurrentUILocale();
+  return new Intl.DateTimeFormat(locale, {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
 }
 
 /**
@@ -84,7 +97,7 @@ export function humanReadableFormat(dateString: string): string {
 export function humanReadableFormatShort(date: string | Date | null): string {
   if (!date) return "";
   const d = typeof date === "string" ? new Date(date) : date;
-  const formatter = new Intl.DateTimeFormat("en-US", {
+  const formatter = new Intl.DateTimeFormat(getCurrentUILocale(), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -98,7 +111,7 @@ export function humanReadableFormatWithTime(datetimeString: string): string {
 
   // Use Intl.DateTimeFormat to format the date
   // Specify the locale as 'en-US' and options for month, day, and year
-  const formatter = new Intl.DateTimeFormat("en-US", {
+  const formatter = new Intl.DateTimeFormat(getCurrentUILocale(), {
     month: "long", // full month name
     day: "numeric", // numeric day
     year: "numeric", // numeric year

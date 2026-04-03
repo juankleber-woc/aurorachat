@@ -5,6 +5,7 @@ import Text from "@/refresh-components/texts/Text";
 import { Button } from "@opal/components";
 
 import { NEXT_PUBLIC_CLOUD_ENABLED } from "@/lib/constants";
+import { useLocale } from "@/providers/LocaleProvider";
 
 // Maps raw IdP/OAuth error codes to user-friendly messages.
 // If the message is a known code, we replace it; otherwise show it as-is.
@@ -33,14 +34,15 @@ interface AuthErrorContentProps {
 
 function AuthErrorContent({ message: rawMessage }: AuthErrorContentProps) {
   const message = resolveMessage(rawMessage);
+  const { locale, t } = useLocale();
   return (
     <AuthFlowContainer>
       <div className="flex flex-col items-center gap-4">
         <Text headingH2 text05>
-          Authentication Error
+          {t("auth_error_title")}
         </Text>
         <Text mainContentBody text03>
-          There was a problem with your login attempt.
+          {t("auth_error_description")}
         </Text>
         {/* TODO: Error card component */}
         <div className="w-full rounded-12 border border-status-error-05 bg-status-error-00 p-4">
@@ -67,20 +69,26 @@ function AuthErrorContent({ message: rawMessage }: AuthErrorContentProps) {
         </div>
 
         <Button href="/auth/login" width="full">
-          Return to Login Page
+          {t("auth_return_to_login")}
         </Button>
 
         <Text mainContentBody text04>
           {NEXT_PUBLIC_CLOUD_ENABLED ? (
             <>
-              If you continue to experience problems, please reach out to the
-              AuroraChat team at{" "}
-              <a href="mailto:support@onyx.app" className="text-action-link-05">
-                support@onyx.app
+              {locale === "pt-BR"
+                ? "Se o problema continuar, entre em contato com a equipe AuroraChat em "
+                : "If you continue to experience problems, please reach out to the AuroraChat team at "}
+              <a
+                href="mailto:support@aurorachat.app"
+                className="text-action-link-05"
+              >
+                support@aurorachat.app
               </a>
             </>
           ) : (
-            "If you continue to experience problems, please reach out to your system administrator for assistance."
+            locale === "pt-BR"
+              ? "Se o problema continuar, fale com o administrador do sistema para obter ajuda."
+              : "If you continue to experience problems, please reach out to your system administrator for assistance."
           )}
         </Text>
       </div>

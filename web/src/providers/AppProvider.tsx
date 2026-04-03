@@ -30,6 +30,7 @@ import { AppSidebarProvider } from "@/providers/AppSidebarProvider";
 import { AppBackgroundProvider } from "@/providers/AppBackgroundProvider";
 import { QueryControllerProvider } from "@/providers/QueryControllerProvider";
 import ToastProvider from "@/providers/ToastProvider";
+import { LocaleProvider } from "@/providers/LocaleProvider";
 
 interface AppProviderProps {
   children: React.ReactNode;
@@ -38,19 +39,21 @@ interface AppProviderProps {
 export default function AppProvider({ children }: AppProviderProps) {
   return (
     <SettingsProvider>
-      <UserProvider>
-        <AppBackgroundProvider>
-          <ProviderContextProvider>
-            <ModalProvider>
-              <AppSidebarProvider>
-                <QueryControllerProvider>
-                  <ToastProvider>{children}</ToastProvider>
-                </QueryControllerProvider>
-              </AppSidebarProvider>
-            </ModalProvider>
-          </ProviderContextProvider>
-        </AppBackgroundProvider>
-      </UserProvider>
+      <LocaleProvider>
+        <UserProvider>
+          <AppBackgroundProvider>
+            <ProviderContextProvider>
+              <ModalProvider>
+                <AppSidebarProvider>
+                  <QueryControllerProvider>
+                    <ToastProvider>{children}</ToastProvider>
+                  </QueryControllerProvider>
+                </AppSidebarProvider>
+              </ModalProvider>
+            </ProviderContextProvider>
+          </AppBackgroundProvider>
+        </UserProvider>
+      </LocaleProvider>
     </SettingsProvider>
   );
 }

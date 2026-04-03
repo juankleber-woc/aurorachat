@@ -8,6 +8,7 @@ import { SvgSliders } from "@opal/icons";
 import { useUser } from "@/providers/UserProvider";
 import { useAuthType } from "@/lib/hooks";
 import { Section } from "@/layouts/general-layouts";
+import { useLocale } from "@/providers/LocaleProvider";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ export default function Layout({ children }: LayoutProps) {
   const pathname = usePathname();
   const { user } = useUser();
   const authType = useAuthType();
+  const { t } = useLocale();
 
   const showPasswordSection = Boolean(user?.password_configured);
   const showTokensSection = authType !== null;
@@ -25,7 +27,11 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <AppLayouts.Root>
       <SettingsLayouts.Root width="lg">
-        <SettingsLayouts.Header icon={SvgSliders} title="Settings" separator />
+        <SettingsLayouts.Header
+          icon={SvgSliders}
+          title={t("settings")}
+          separator
+        />
 
         <SettingsLayouts.Body>
           <Section
@@ -43,27 +49,27 @@ export default function Layout({ children }: LayoutProps) {
                 href="/app/settings/general"
                 selected={pathname === "/app/settings/general"}
               >
-                General
+                {t("general")}
               </SidebarTab>
               <SidebarTab
                 href="/app/settings/chat-preferences"
                 selected={pathname === "/app/settings/chat-preferences"}
               >
-                Chat Preferences
+                {t("chat_preferences")}
               </SidebarTab>
               {showAccountsAccessTab && (
                 <SidebarTab
                   href="/app/settings/accounts-access"
                   selected={pathname === "/app/settings/accounts-access"}
                 >
-                  Accounts & Access
+                  {t("accounts_access")}
                 </SidebarTab>
               )}
               <SidebarTab
                 href="/app/settings/connectors"
                 selected={pathname.startsWith("/app/settings/connectors")}
               >
-                Connectors
+                {t("connectors")}
               </SidebarTab>
             </div>
 

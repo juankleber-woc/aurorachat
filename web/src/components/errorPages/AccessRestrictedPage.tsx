@@ -104,11 +104,8 @@ export default function AccessRestricted() {
             <Link className={linkClassName} href="/admin/users">
               User Management
             </Link>{" "}
-            page or upgrade your license on the{" "}
-            <Link className={linkClassName} href="/admin/billing">
-              Admin Billing
-            </Link>{" "}
-            page.
+            page or contact your AuroraChat representative to expand your
+            license.
           </Text>
 
           <div className="flex flex-row gap-2">
@@ -161,16 +158,11 @@ export default function AccessRestricted() {
           </Text>
 
           <Text text03>
-            If you are the administrator, please visit the{" "}
-            <Link className={linkClassName} href="/admin/billing">
-              Admin Billing
-            </Link>{" "}
-            page to {hadPreviousLicense ? "renew" : "activate"} your license,
-            sign up through Stripe or reach out to{" "}
-            <a className={linkClassName} href="mailto:support@onyx.app">
-              support@onyx.app
+            If you are the administrator, reach out to the AuroraChat team at{" "}
+            <a className={linkClassName} href="mailto:support@aurorachat.app">
+              support@aurorachat.app
             </a>{" "}
-            for billing assistance.
+            for help with {hadPreviousLicense ? "license renewal" : "license activation"}.
           </Text>
 
           <div className="flex flex-row gap-2">

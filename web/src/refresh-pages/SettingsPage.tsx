@@ -66,6 +66,7 @@ import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidE
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import SimpleTooltip from "@/refresh-components/SimpleTooltip";
 import { useCloudSubscription } from "@/hooks/useCloudSubscription";
+import { useLocale } from "@/providers/LocaleProvider";
 
 interface PAT {
   id: number;
@@ -189,6 +190,7 @@ function GeneralSettings() {
     updateUserChatBackground,
   } = useUser();
   const { theme, setTheme, systemTheme } = useTheme();
+  const { locale, setLocale, t } = useLocale();
   const { refreshChatSessions } = useChatSessions();
   const router = useRouter();
   const pathname = usePathname();
@@ -264,7 +266,7 @@ function GeneralSettings() {
       <Section gap={2}>
         <Section gap={0.75}>
           <Content
-            title="Profile"
+            title={t("general") === "Geral" ? "Perfil" : "Profile"}
             sizePreset="main-content"
             variant="section"
             widthVariant="full"
@@ -272,11 +274,15 @@ function GeneralSettings() {
           <Card>
             <InputLayouts.Horizontal
               title="Full Name"
-              description="We'll display this name in the app."
+              description={
+                locale === "pt-BR"
+                  ? "Esse nome será exibido no aplicativo."
+                  : "We'll display this name in the app."
+              }
               center
             >
               <InputTypeIn
-                placeholder="Your name"
+                placeholder={locale === "pt-BR" ? "Seu nome" : "Your name"}
                 value={personalizationValues.name}
                 onChange={(e) =>
                   updatePersonalizationField("name", e.target.value)
@@ -297,11 +303,15 @@ function GeneralSettings() {
             </InputLayouts.Horizontal>
             <InputLayouts.Horizontal
               title="Work Role"
-              description="Share your role to better tailor responses."
+              description={
+                locale === "pt-BR"
+                  ? "Compartilhe seu cargo para personalizar melhor as respostas."
+                  : "Share your role to better tailor responses."
+              }
               center
             >
               <InputTypeIn
-                placeholder="Your role"
+                placeholder={locale === "pt-BR" ? "Seu cargo" : "Your role"}
                 value={personalizationValues.role}
                 onChange={(e) =>
                   updatePersonalizationField("role", e.target.value)
@@ -325,15 +335,39 @@ function GeneralSettings() {
 
         <Section gap={0.75}>
           <Content
-            title="Appearance"
+            title={locale === "pt-BR" ? "Aparência" : "Appearance"}
             sizePreset="main-content"
             variant="section"
             widthVariant="full"
           />
           <Card>
             <InputLayouts.Horizontal
-              title="Color Mode"
-              description="Select your preferred color mode for the UI."
+              title={t("app_language")}
+              description={t("app_language_description")}
+              center
+            >
+              <InputSelect
+                value={locale}
+                onValueChange={(value) => setLocale(value as "pt-BR" | "en-US")}
+              >
+                <InputSelect.Trigger />
+                <InputSelect.Content>
+                  <InputSelect.Item value="pt-BR">
+                    {t("language_portuguese")}
+                  </InputSelect.Item>
+                  <InputSelect.Item value="en-US">
+                    {t("language_english")}
+                  </InputSelect.Item>
+                </InputSelect.Content>
+              </InputSelect>
+            </InputLayouts.Horizontal>
+            <InputLayouts.Horizontal
+              title={locale === "pt-BR" ? "Modo de cor" : "Color Mode"}
+              description={
+                locale === "pt-BR"
+                  ? "Escolha o modo de cor preferido para a interface."
+                  : "Select your preferred color mode for the UI."
+              }
               center
             >
               <InputSelect
@@ -360,25 +394,27 @@ function GeneralSettings() {
                         : undefined
                     }
                   >
-                    Auto
+                    {locale === "pt-BR" ? "Automático" : "Auto"}
                   </InputSelect.Item>
                   <InputSelect.Separator />
                   <InputSelect.Item
                     value={ThemePreference.LIGHT}
                     icon={() => <ColorSwatch light />}
                   >
-                    Light
+                    {locale === "pt-BR" ? "Claro" : "Light"}
                   </InputSelect.Item>
                   <InputSelect.Item
                     value={ThemePreference.DARK}
                     icon={() => <ColorSwatch dark />}
                   >
-                    Dark
+                    {locale === "pt-BR" ? "Escuro" : "Dark"}
                   </InputSelect.Item>
                 </InputSelect.Content>
               </InputSelect>
             </InputLayouts.Horizontal>
-            <InputLayouts.Vertical title="Chat Background">
+            <InputLayouts.Vertical
+              title={locale === "pt-BR" ? "Plano de fundo do chat" : "Chat Background"}
+            >
               <div className="flex flex-wrap gap-2">
                 {CHAT_BACKGROUND_OPTIONS.map((bg) => {
                   const currentBackgroundId =
@@ -402,7 +438,9 @@ function GeneralSettings() {
                     >
                       {isNone ? (
                         <div className="absolute inset-0 bg-background flex items-center justify-center">
-                          <span className="text-xs text-text-02">None</span>
+                          <span className="text-xs text-text-02">
+                            {locale === "pt-BR" ? "Nenhum" : "None"}
+                          </span>
                         </div>
                       ) : (
                         <div
@@ -435,15 +473,21 @@ function GeneralSettings() {
 
         <Section gap={0.75}>
           <Content
-            title="Danger Zone"
+            title={locale === "pt-BR" ? "Zona de perigo" : "Danger Zone"}
             sizePreset="main-content"
             variant="section"
             widthVariant="full"
           />
           <Card>
             <InputLayouts.Horizontal
-              title="Delete All Chats"
-              description="Permanently delete all your chat sessions."
+              title={
+                locale === "pt-BR" ? "Excluir todos os chats" : "Delete All Chats"
+              }
+              description={
+                locale === "pt-BR"
+                  ? "Exclui permanentemente todas as suas conversas."
+                  : "Permanently delete all your chat sessions."
+              }
               center
             >
               <Button
@@ -453,7 +497,7 @@ function GeneralSettings() {
                 icon={SvgTrash}
                 interaction={showDeleteConfirmation ? "hover" : "rest"}
               >
-                Delete All Chats
+                {locale === "pt-BR" ? "Excluir todos os chats" : "Delete All Chats"}
               </Button>
             </InputLayouts.Horizontal>
           </Card>

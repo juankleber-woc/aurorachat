@@ -26,7 +26,7 @@ import { Button as OpalButton } from "@opal/components";
 import Text from "@/refresh-components/texts/Text";
 import { Section } from "@/layouts/general-layouts";
 
-const SALES_URL = "https://www.onyx.app/contact-sales";
+const SALES_URL = "mailto:support@aurorachat.app";
 
 // ----------------------------------------------------------------------------
 // Types
@@ -249,7 +249,7 @@ export default function PlansView({
       pricing: "$20",
       description:
         "per seat/month billed annually\nor $25 per seat if billed monthly",
-      buttonLabel: "Get Business Plan",
+      buttonLabel: "Talk to AuroraChat",
       buttonVariant: "primary",
       onClick: hasLicense ? undefined : onCheckout,
       features: BUSINESS_FEATURES,
@@ -261,7 +261,7 @@ export default function PlansView({
       title: "Enterprise",
       description:
         "Flexible pricing & deployment options\nfor large organizations",
-      buttonLabel: "Contact Sales",
+      buttonLabel: "Talk to AuroraChat",
       buttonVariant: "secondary",
       href: SALES_URL,
       features: ENTERPRISE_FEATURES,

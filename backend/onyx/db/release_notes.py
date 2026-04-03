@@ -1,18 +1,13 @@
 """Database functions for release notes functionality."""
 
-from urllib.parse import urlencode
-
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from onyx.configs.app_configs import INSTANCE_TYPE
 from onyx.configs.constants import DANSWER_API_KEY_DUMMY_EMAIL_DOMAIN
 from onyx.configs.constants import NotificationType
-from onyx.configs.constants import ONYX_UTM_SOURCE
 from onyx.db.enums import AccountType
 from onyx.db.models import User
 from onyx.db.notification import batch_create_notifications
-from onyx.server.features.release_notes.constants import DOCS_CHANGELOG_BASE_URL
 from onyx.server.features.release_notes.models import ReleaseNoteEntry
 from onyx.utils.logger import setup_logger
 
@@ -57,23 +52,9 @@ def create_release_notifications_for_versions(
 
     total_created = 0
     for entry in release_note_entries:
-        # Convert version to anchor format for external docs links
-        # v2.7.0 -> v2-7-0
-        version_anchor = entry.version.replace(".", "-")
-
-        # Build UTM parameters for tracking
-        utm_params = {
-            "utm_source": ONYX_UTM_SOURCE,
-            "utm_medium": "notification",
-            "utm_campaign": INSTANCE_TYPE,
-            "utm_content": f"release_notes-{entry.version}",
-        }
-
-        link = f"{DOCS_CHANGELOG_BASE_URL}#{version_anchor}?{urlencode(utm_params)}"
-
         additional_data: dict[str, str] = {
             "version": entry.version,
-            "link": link,
+            "link": entry.link,
         }
 
         created_count = batch_create_notifications(

@@ -25,6 +25,7 @@ import { toast } from "@/hooks/useToast";
 import useAppFocus from "@/hooks/useAppFocus";
 import { useVectorDbEnabled } from "@/providers/SettingsProvider";
 import UserAvatar from "@/refresh-components/avatars/UserAvatar";
+import { useLocale } from "@/providers/LocaleProvider";
 
 interface SettingsPopoverProps {
   onUserSettingsClick: () => void;
@@ -44,12 +45,20 @@ function SettingsPopover({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isVisibleNotification = (n: Notification) =>
+    !n.dismissed &&
+    n.notif_type !== "two_day_trial_ending" &&
+    (n.notif_type !== "release_notes" ||
+      n.additional_data?.link?.includes(
+        "github.com/juankleber-woc/aurorachat/releases/tag/"
+      ));
   const undismissedCount =
-    notifications?.filter((n) => !n.dismissed).length ?? 0;
+    notifications?.filter(isVisibleNotification).length ?? 0;
   const isAnonymousUser =
     user?.is_anonymous_user || checkUserIsNoAuthUser(user?.id ?? "");
   const showLogout = user && !isAnonymousUser && !LOGOUT_DISABLED;
   const showLogin = isAnonymousUser;
+  const { t } = useLocale();
 
   const handleLogin = () => {
     const currentUrl = `${pathname}${
@@ -93,7 +102,7 @@ function SettingsPopover({
               href="/app/settings"
               onClick={onUserSettingsClick}
             >
-              User Settings
+              {t("user_settings")}
             </LineItem>
           </div>,
           <LineItem
@@ -101,7 +110,7 @@ function SettingsPopover({
             icon={SvgBell}
             onClick={onOpenNotifications}
           >
-            {`Notifications${
+            {`${t("notifications")}${
               undismissedCount > 0 ? ` (${undismissedCount})` : ""
             }`}
           </LineItem>,
@@ -112,12 +121,12 @@ function SettingsPopover({
             target="_blank"
             rel="noopener noreferrer"
           >
-            Help & FAQ
+            {t("help_faq")}
           </LineItem>,
           null,
           showLogin && (
             <LineItem key="log-in" icon={SvgUser} onClick={handleLogin}>
-              Log in
+              {t("log_in")}
             </LineItem>
           ),
           showLogout && (
@@ -127,7 +136,7 @@ function SettingsPopover({
               danger
               onClick={handleLogout}
             >
-              Log out
+              {t("log_out")}
             </LineItem>
           ),
         ]}
@@ -160,8 +169,15 @@ export default function UserAvatarPopover({
   );
 
   const userDisplayName = getUserDisplayName(user);
+  const isVisibleNotification = (n: Notification) =>
+    !n.dismissed &&
+    n.notif_type !== "two_day_trial_ending" &&
+    (n.notif_type !== "release_notes" ||
+      n.additional_data?.link?.includes(
+        "github.com/juankleber-woc/aurorachat/releases/tag/"
+      ));
   const undismissedCount =
-    notifications?.filter((n) => !n.dismissed).length ?? 0;
+    notifications?.filter(isVisibleNotification).length ?? 0;
   const hasNotifications = undismissedCount > 0;
 
   const handlePopoverOpen = (state: boolean) => {

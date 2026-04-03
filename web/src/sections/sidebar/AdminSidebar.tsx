@@ -16,11 +16,6 @@ import SidebarBody from "@/sections/sidebar/SidebarBody";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
 import { Disabled } from "@opal/core";
 import { SvgArrowUpCircle, SvgUserManage, SvgX } from "@opal/icons";
-import {
-  useBillingInformation,
-  useLicense,
-  hasActiveSubscription,
-} from "@/lib/billing";
 import { Content } from "@opal/layouts";
 import { ADMIN_ROUTES, sidebarItem } from "@/lib/admin-routes";
 import useFilter from "@/hooks/useFilter";
@@ -29,16 +24,7 @@ import { Section } from "@/layouts/general-layouts";
 import Text from "@/refresh-components/texts/Text";
 import { getUserDisplayName } from "@/lib/user";
 import { APP_SLOGAN } from "@/lib/constants";
-
-const SECTIONS = {
-  UNLABELED: "",
-  AGENTS_AND_ACTIONS: "Agents & Actions",
-  DOCUMENTS_AND_KNOWLEDGE: "Documents & Knowledge",
-  INTEGRATIONS: "Integrations",
-  PERMISSIONS: "Permissions",
-  ORGANIZATION: "Organization",
-  USAGE: "Usage",
-} as const;
+import { useLocale } from "@/providers/LocaleProvider";
 
 interface SidebarItemEntry {
   section: string;
@@ -49,6 +35,16 @@ interface SidebarItemEntry {
   disabled?: boolean;
 }
 
+interface SidebarSections {
+  UNLABELED: string;
+  AGENTS_AND_ACTIONS: string;
+  DOCUMENTS_AND_KNOWLEDGE: string;
+  INTEGRATIONS: string;
+  PERMISSIONS: string;
+  ORGANIZATION: string;
+  USAGE: string;
+}
+
 function buildItems(
   isCurator: boolean,
   enableCloud: boolean,
@@ -57,7 +53,8 @@ function buildItems(
   kgExposed: boolean,
   customAnalyticsEnabled: boolean,
   hasSubscription: boolean,
-  hooksEnabled: boolean
+  hooksEnabled: boolean,
+  sections: SidebarSections
 ): SidebarItemEntry[] {
   const vectorDbEnabled = settings?.settings.vector_db_enabled !== false;
   const items: SidebarItemEntry[] = [];
@@ -76,20 +73,20 @@ function buildItems(
 
   // 1. No header — core configuration (admin only)
   if (!isCurator) {
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.LLM_MODELS);
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.WEB_SEARCH);
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.IMAGE_GENERATION);
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.VOICE);
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.CODE_INTERPRETER);
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.CHAT_PREFERENCES);
+    add(sections.UNLABELED, ADMIN_ROUTES.LLM_MODELS);
+    add(sections.UNLABELED, ADMIN_ROUTES.WEB_SEARCH);
+    add(sections.UNLABELED, ADMIN_ROUTES.IMAGE_GENERATION);
+    add(sections.UNLABELED, ADMIN_ROUTES.VOICE);
+    add(sections.UNLABELED, ADMIN_ROUTES.CODE_INTERPRETER);
+    add(sections.UNLABELED, ADMIN_ROUTES.CHAT_PREFERENCES);
 
     if (vectorDbEnabled && kgExposed) {
-      add(SECTIONS.UNLABELED, ADMIN_ROUTES.KNOWLEDGE_GRAPH);
+      add(sections.UNLABELED, ADMIN_ROUTES.KNOWLEDGE_GRAPH);
     }
 
     if (!enableCloud && customAnalyticsEnabled) {
       addDisabled(
-        SECTIONS.UNLABELED,
+        sections.UNLABELED,
         ADMIN_ROUTES.CUSTOM_ANALYTICS,
         !enableEnterprise
       );
@@ -97,59 +94,57 @@ function buildItems(
   }
 
   // 2. Agents & Actions
-  add(SECTIONS.AGENTS_AND_ACTIONS, ADMIN_ROUTES.AGENTS);
-  add(SECTIONS.AGENTS_AND_ACTIONS, ADMIN_ROUTES.MCP_ACTIONS);
-  add(SECTIONS.AGENTS_AND_ACTIONS, ADMIN_ROUTES.OPENAPI_ACTIONS);
+  add(sections.AGENTS_AND_ACTIONS, ADMIN_ROUTES.AGENTS);
+  add(sections.AGENTS_AND_ACTIONS, ADMIN_ROUTES.MCP_ACTIONS);
+  add(sections.AGENTS_AND_ACTIONS, ADMIN_ROUTES.OPENAPI_ACTIONS);
 
   // 3. Documents & Knowledge
   if (vectorDbEnabled) {
-    add(SECTIONS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.INDEXING_STATUS);
-    add(SECTIONS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.ADD_CONNECTOR);
-    add(SECTIONS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.DOCUMENT_SETS);
+    add(sections.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.INDEXING_STATUS);
+    add(sections.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.ADD_CONNECTOR);
+    add(sections.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.DOCUMENT_SETS);
     if (!isCurator && !enableCloud) {
       items.push({
         ...sidebarItem(ADMIN_ROUTES.INDEX_SETTINGS),
-        section: SECTIONS.DOCUMENTS_AND_KNOWLEDGE,
+        section: sections.DOCUMENTS_AND_KNOWLEDGE,
         error: settings?.settings.needs_reindexing,
       });
     }
     if (!isCurator && settings?.settings.opensearch_indexing_enabled) {
-      add(SECTIONS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.INDEX_MIGRATION);
+      add(sections.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.INDEX_MIGRATION);
     }
   }
 
   // 4. Integrations (admin only)
   if (!isCurator) {
-    add(SECTIONS.INTEGRATIONS, ADMIN_ROUTES.API_KEYS);
-    add(SECTIONS.INTEGRATIONS, ADMIN_ROUTES.SLACK_BOTS);
-    add(SECTIONS.INTEGRATIONS, ADMIN_ROUTES.DISCORD_BOTS);
+    add(sections.INTEGRATIONS, ADMIN_ROUTES.API_KEYS);
+    add(sections.INTEGRATIONS, ADMIN_ROUTES.SLACK_BOTS);
+    add(sections.INTEGRATIONS, ADMIN_ROUTES.DISCORD_BOTS);
     if (hooksEnabled) {
-      add(SECTIONS.INTEGRATIONS, ADMIN_ROUTES.HOOKS);
+      add(sections.INTEGRATIONS, ADMIN_ROUTES.HOOKS);
     }
   }
 
   // 5. Permissions
   if (!isCurator) {
-    add(SECTIONS.PERMISSIONS, ADMIN_ROUTES.USERS);
-    addDisabled(SECTIONS.PERMISSIONS, ADMIN_ROUTES.GROUPS, !enableEnterprise);
-    addDisabled(SECTIONS.PERMISSIONS, ADMIN_ROUTES.SCIM, !enableEnterprise);
+    add(sections.PERMISSIONS, ADMIN_ROUTES.USERS);
+    addDisabled(sections.PERMISSIONS, ADMIN_ROUTES.GROUPS, !enableEnterprise);
+    addDisabled(sections.PERMISSIONS, ADMIN_ROUTES.SCIM, !enableEnterprise);
   } else if (enableEnterprise) {
-    add(SECTIONS.PERMISSIONS, ADMIN_ROUTES.GROUPS);
+    add(sections.PERMISSIONS, ADMIN_ROUTES.GROUPS);
   }
 
   // 6. Organization (admin only)
   if (!isCurator) {
-    add(SECTIONS.ORGANIZATION, ADMIN_ROUTES.BILLING);
-    add(SECTIONS.ORGANIZATION, ADMIN_ROUTES.TOKEN_RATE_LIMITS);
-    addDisabled(SECTIONS.ORGANIZATION, ADMIN_ROUTES.THEME, !enableEnterprise);
+    addDisabled(sections.ORGANIZATION, ADMIN_ROUTES.THEME, !enableEnterprise);
   }
 
   // 7. Usage (admin only)
   if (!isCurator) {
-    addDisabled(SECTIONS.USAGE, ADMIN_ROUTES.USAGE, !enableEnterprise);
+    addDisabled(sections.USAGE, ADMIN_ROUTES.USAGE, !enableEnterprise);
     if (settings?.settings.query_history_type !== "disabled") {
       addDisabled(
-        SECTIONS.USAGE,
+        sections.USAGE,
         ADMIN_ROUTES.QUERY_HISTORY,
         !enableEnterprise
       );
@@ -184,21 +179,20 @@ export default function AdminSidebar({ enableCloudSS }: AdminSidebarProps) {
   const { user } = useUser();
   const settings = useSettingsContext();
   const enableEnterprise = usePaidEnterpriseFeaturesEnabled();
-  const { data: billingData, isLoading: billingLoading } =
-    useBillingInformation();
-  const { data: licenseData, isLoading: licenseLoading } = useLicense();
+  const { t } = useLocale();
   const isCurator =
     user?.role === UserRole.CURATOR || user?.role === UserRole.GLOBAL_CURATOR;
-  // Default to true while loading to avoid flashing "Upgrade Plan"
-  const hasSubscriptionOrLicense =
-    billingLoading || licenseLoading
-      ? true
-      : Boolean(
-          (billingData && hasActiveSubscription(billingData)) ||
-            licenseData?.has_license
-        );
   const hooksEnabled =
     enableEnterprise && (settings?.settings.hooks_enabled ?? false);
+  const SECTIONS = {
+    UNLABELED: "",
+    AGENTS_AND_ACTIONS: t("agents_actions"),
+    DOCUMENTS_AND_KNOWLEDGE: t("documents_knowledge"),
+    INTEGRATIONS: t("integrations"),
+    PERMISSIONS: t("permissions"),
+    ORGANIZATION: t("organization"),
+    USAGE: t("usage"),
+  } as const;
 
   const allItems = buildItems(
     isCurator,
@@ -207,8 +201,9 @@ export default function AdminSidebar({ enableCloudSS }: AdminSidebarProps) {
     settings,
     kgExposed,
     customAnalyticsEnabled,
-    hasSubscriptionOrLicense,
-    hooksEnabled
+    true,
+    hooksEnabled,
+    SECTIONS
   );
 
   const itemExtractor = useCallback((item: SidebarItemEntry) => item.name, []);
@@ -228,12 +223,12 @@ export default function AdminSidebar({ enableCloudSS }: AdminSidebarProps) {
               href="/app"
               variant="sidebar-light"
             >
-              Exit Admin Panel
+              {t("exit_admin_panel")}
             </SidebarTab>
             <InputTypeIn
               variant="internal"
               leftSearchIcon
-              placeholder="Search..."
+              placeholder={t("search_placeholder")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />

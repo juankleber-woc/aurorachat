@@ -9,6 +9,7 @@ from onyx.db.models import User
 from onyx.db.notification import dismiss_notification
 from onyx.db.notification import get_notification_by_id
 from onyx.db.notification import get_notifications
+from onyx.configs.constants import NotificationType
 from onyx.server.features.build.utils import ensure_build_mode_intro_notification
 from onyx.server.features.release_notes.utils import (
     ensure_release_notes_fresh_and_notify,
@@ -51,6 +52,7 @@ def get_notifications_api(
     notifications = [
         NotificationModel.from_model(notif)
         for notif in get_notifications(user, db_session, include_dismissed=True)
+        if notif.notif_type != NotificationType.TRIAL_ENDS_TWO_DAYS
     ]
     return notifications
 

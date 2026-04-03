@@ -1,13 +1,9 @@
 """Constants for release notes functionality."""
 
 # GitHub source
-GITHUB_RAW_BASE_URL = (
-    "https://raw.githubusercontent.com/onyx-dot-app/documentation/main"
+GITHUB_RELEASES_API_URL = (
+    "https://api.github.com/repos/juankleber-woc/aurorachat/releases"
 )
-GITHUB_CHANGELOG_RAW_URL = f"{GITHUB_RAW_BASE_URL}/changelog.mdx"
-
-# Base URL for changelog documentation (used for notification links)
-DOCS_CHANGELOG_BASE_URL = "https://docs.onyx.app/changelog"
 
 FETCH_TIMEOUT = 60.0
 

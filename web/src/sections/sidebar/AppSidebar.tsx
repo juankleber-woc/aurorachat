@@ -80,6 +80,7 @@ import { errorHandlingFetcher } from "@/lib/fetcher";
 import UserAvatarPopover from "@/sections/sidebar/UserAvatarPopover";
 import ChatSearchCommandMenu from "@/sections/sidebar/ChatSearchCommandMenu";
 import { useQueryController } from "@/providers/QueryControllerProvider";
+import { useLocale } from "@/providers/LocaleProvider";
 
 // Visible-agents = pinned-agents + current-agent (if current-agent not in pinned-agents)
 // OR Visible-agents = pinned-agents (if current-agent in pinned-agents)
@@ -120,6 +121,7 @@ function RecentsSection({
   isLoadingMore,
   onLoadMore,
 }: RecentsSectionProps) {
+  const { t } = useLocale();
   const { setNodeRef, isOver } = useDroppable({
     id: DRAG_TYPES.RECENTS,
     data: {
@@ -162,10 +164,10 @@ function RecentsSection({
         isOver && "bg-background-tint-03"
       )}
     >
-      <SidebarSection title="Recents">
+      <SidebarSection title={t("recents")}>
         {chatSessions.length === 0 ? (
           <Text as="p" text01 className="px-3">
-            Try sending a message! Your chat history will appear here.
+            {t("recents_empty")}
           </Text>
         ) : (
           <>
@@ -204,6 +206,7 @@ interface AppSidebarInnerProps {
 const MemoizedAppSidebarInner = memo(
   ({ folded, onFoldClick }: AppSidebarInnerProps) => {
     const router = useRouter();
+    const { t } = useLocale();
     const combinedSettings = useSettingsContext();
     const posthog = usePostHog();
     const { newTenantInfo, invitationInfo } = useModalContext();
@@ -531,11 +534,11 @@ const MemoizedAppSidebarInner = memo(
             href={CRAFT_PATH}
             onClick={() => track(AnalyticsEvent.CLICKED_CRAFT_IN_SIDEBAR)}
           >
-            Craft
+            {t("craft")}
           </SidebarTab>
         </div>
       ),
-      [folded, posthog]
+      [folded, posthog, t]
     );
 
     const searchChatsButton = useMemo(
@@ -543,12 +546,12 @@ const MemoizedAppSidebarInner = memo(
         <ChatSearchCommandMenu
           trigger={
             <SidebarTab icon={SvgSearchMenu} folded={folded}>
-              Search Chats
+              {t("search_chats")}
             </SidebarTab>
           }
         />
       ),
-      [folded]
+      [folded, t]
     );
     const moreAgentsButton = useMemo(
       () => (
@@ -564,11 +567,13 @@ const MemoizedAppSidebarInner = memo(
             selected={activeSidebarTab.isMoreAgents()}
             variant={folded ? "sidebar-heavy" : "sidebar-light"}
           >
-            {visibleAgents.length === 0 ? "Explore Agents" : "More Agents"}
+            {visibleAgents.length === 0
+              ? t("explore_agents")
+              : t("more_agents")}
           </SidebarTab>
         </div>
       ),
-      [folded, activeSidebarTab, visibleAgents]
+      [folded, activeSidebarTab, visibleAgents, t]
     );
     const newProjectButton = useMemo(
       () => (
@@ -579,10 +584,10 @@ const MemoizedAppSidebarInner = memo(
           folded={folded}
           variant={folded ? "sidebar-heavy" : "sidebar-light"}
         >
-          New Project
+          {t("new_project")}
         </SidebarTab>
       ),
-      [folded, createProjectModal.toggle, createProjectModal.isOpen]
+      [folded, createProjectModal.toggle, createProjectModal.isOpen, t]
     );
     const handleShowBuildIntro = useCallback(() => {
       setShowIntroAnimation(true);
@@ -597,7 +602,7 @@ const MemoizedAppSidebarInner = memo(
               icon={SvgSettings}
               folded={folded}
             >
-              {isAdmin ? "Admin Panel" : "Curator Panel"}
+              {isAdmin ? t("admin_panel") : t("curator_panel")}
             </SidebarTab>
           )}
           <UserAvatarPopover
@@ -608,7 +613,7 @@ const MemoizedAppSidebarInner = memo(
           />
         </div>
       ),
-      [folded, isAdmin, isCurator, handleShowBuildIntro, isOnyxCraftEnabled]
+      [folded, isAdmin, isCurator, handleShowBuildIntro, isOnyxCraftEnabled, t]
     );
 
     return (
@@ -698,7 +703,7 @@ const MemoizedAppSidebarInner = memo(
                   collisionDetection={closestCenter}
                   onDragEnd={handleAgentDragEnd}
                 >
-                  <SidebarSection title="Agents">
+                  <SidebarSection title={t("agents")}>
                     <SortableContext
                       items={visibleAgentIds}
                       strategy={verticalListSortingStrategy}
@@ -726,13 +731,13 @@ const MemoizedAppSidebarInner = memo(
                 >
                   {/* Projects */}
                   <SidebarSection
-                    title="Projects"
+                    title={t("projects")}
                     action={
                       <OpalButton
                         icon={SvgFolderPlus}
                         prominence="tertiary"
                         size="sm"
-                        tooltip="New Project"
+                        tooltip={t("new_project")}
                         onClick={() => createProjectModal.toggle(true)}
                       />
                     }

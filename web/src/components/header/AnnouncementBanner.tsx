@@ -3,14 +3,15 @@ import { useState, useEffect, useContext } from "react";
 import { CustomTooltip } from "../tooltip/CustomTooltip";
 import { SettingsContext } from "@/providers/SettingsProvider";
 import Link from "next/link";
-import type { Route } from "next";
 import Cookies from "js-cookie";
 import { SvgX } from "@opal/icons";
+import { useLocale } from "@/providers/LocaleProvider";
 const DISMISSED_NOTIFICATION_COOKIE_PREFIX = "dismissed_notification_";
 const COOKIE_EXPIRY_DAYS = 1;
 
 export function AnnouncementBanner() {
   const settings = useContext(SettingsContext);
+  const { locale, t } = useLocale();
   const [localNotifications, setLocalNotifications] = useState(
     settings?.settings.notifications || []
   );
@@ -59,7 +60,11 @@ export function AnnouncementBanner() {
   return (
     <>
       {localNotifications
-        .filter((notification) => !notification.dismissed)
+        .filter(
+          (notification) =>
+            !notification.dismissed &&
+            notification.notif_type !== "two_day_trial_ending"
+        )
         .map((notification) => {
           return (
             <div
@@ -68,24 +73,14 @@ export function AnnouncementBanner() {
             >
               {notification.notif_type == "reindex" ? (
                 <p className="text-center">
-                  Your index is out of date - we strongly recommend updating
-                  your search settings.{" "}
+                  {locale === "pt-BR"
+                    ? "Seu índice está desatualizado. Recomendamos atualizar as configurações de busca."
+                    : "Your index is out of date - we strongly recommend updating your search settings."}{" "}
                   <Link
                     href={"/admin/configuration/search"}
                     className="ml-2 underline cursor-pointer"
                   >
-                    Update here
-                  </Link>
-                </p>
-              ) : notification.notif_type == "two_day_trial_ending" ? (
-                <p className="text-center">
-                  Your trial is ending soon - submit your billing information to
-                  continue using AuroraChat.{" "}
-                  <Link
-                    href={"/admin/billing" as Route}
-                    className="ml-2 underline cursor-pointer"
-                  >
-                    Update here
+                    {locale === "pt-BR" ? "Atualizar agora" : "Update here"}
                   </Link>
                 </p>
               ) : null}
@@ -94,7 +89,12 @@ export function AnnouncementBanner() {
                 className="absolute top-0 right-0 mt-2 mr-2"
                 aria-label="Dismiss"
               >
-                <CustomTooltip showTick citation delay={100} content="Dismiss">
+                <CustomTooltip
+                  showTick
+                  citation
+                  delay={100}
+                  content={t("dismiss")}
+                >
                   <SvgX className="stroke-text-04 h-5 w-5" />
                 </CustomTooltip>
               </button>

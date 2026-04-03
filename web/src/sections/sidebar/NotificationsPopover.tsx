@@ -15,6 +15,7 @@ import { Button } from "@opal/components";
 import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import { Section } from "@/layouts/general-layouts";
 import Separator from "@/refresh-components/Separator";
+import { useLocale } from "@/providers/LocaleProvider";
 
 function getNotificationIcon(
   notifType: string
@@ -39,11 +40,70 @@ export default function NotificationsPopover({
   onShowBuildIntro,
 }: NotificationsPopoverProps) {
   const router = useRouter();
+  const { t } = useLocale();
   const {
     data: notifications,
     mutate,
     isLoading,
   } = useSWR<Notification[]>(SWR_KEYS.notifications, errorHandlingFetcher);
+
+  const isAllowedNotification = (notification: Notification) => {
+    if (notification.notif_type === "two_day_trial_ending") {
+      return false;
+    }
+
+    if (notification.notif_type === NotificationType.RELEASE_NOTES) {
+      return notification.additional_data?.link?.includes(
+        "github.com/juankleber-woc/aurorachat/releases/tag/"
+      );
+    }
+
+    return true;
+  };
+
+  const visibleNotifications =
+    notifications?.filter((notification) => isAllowedNotification(notification)) ??
+    [];
+
+  const getNotificationTitle = (notification: Notification) => {
+    if (
+      notification.notif_type === NotificationType.RELEASE_NOTES &&
+      notification.additional_data?.version
+    ) {
+      return t("release_available", {
+        version: notification.additional_data.version,
+      });
+    }
+
+    if (
+      notification.notif_type === NotificationType.FEATURE_ANNOUNCEMENT &&
+      notification.additional_data?.feature === "build_mode"
+    ) {
+      return t("build_intro_title");
+    }
+
+    return notification.title;
+  };
+
+  const getNotificationDescription = (notification: Notification) => {
+    if (
+      notification.notif_type === NotificationType.RELEASE_NOTES &&
+      notification.additional_data?.version
+    ) {
+      return t("release_description", {
+        version: notification.additional_data.version,
+      });
+    }
+
+    if (
+      notification.notif_type === NotificationType.FEATURE_ANNOUNCEMENT &&
+      notification.additional_data?.feature === "build_mode"
+    ) {
+      return t("build_intro_description");
+    }
+
+    return notification.description ?? undefined;
+  };
 
   const handleNotificationClick = (notification: Notification) => {
     // Handle build_mode feature announcement specially - show intro animation
@@ -104,7 +164,7 @@ export default function NotificationsPopover({
   return (
     <Section gap={0.5} padding={0.25}>
       <Section flexDirection="row" justifyContent="between" padding={0.5}>
-        <Text headingH3>Notifications</Text>
+        <Text headingH3>{t("notifications")}</Text>
         <Button icon={SvgX} prominence="tertiary" size="sm" onClick={onClose} />
       </Section>
 
@@ -117,22 +177,22 @@ export default function NotificationsPopover({
               <SimpleLoader />
             </Section>
           </div>
-        ) : !notifications || notifications.length === 0 ? (
+        ) : visibleNotifications.length === 0 ? (
           <div className="h-48">
             <Section>
               <Text as="p" text03>
-                No notifications
+                {t("no_notifications")}
               </Text>
             </Section>
           </div>
         ) : (
           <div className="max-h-96 overflow-y-auto w-full">
             <Section alignItems="stretch" gap={0}>
-              {notifications.map((notification) => (
+              {visibleNotifications.map((notification) => (
                 <LineItem
                   key={notification.id}
                   icon={getNotificationIcon(notification.notif_type)}
-                  description={notification.description ?? undefined}
+                  description={getNotificationDescription(notification)}
                   onClick={() => handleNotificationClick(notification)}
                   strikethrough={notification.dismissed}
                   rightChildren={
@@ -142,12 +202,12 @@ export default function NotificationsPopover({
                         size="sm"
                         icon={SvgX}
                         onClick={(e) => handleDismiss(notification.id, e)}
-                        tooltip="Dismiss"
+                        tooltip={t("dismiss")}
                       />
                     ) : undefined
                   }
                 >
-                  {notification.title}
+                  {getNotificationTitle(notification)}
                 </LineItem>
               ))}
             </Section>

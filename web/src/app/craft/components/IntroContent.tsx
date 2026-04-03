@@ -3,9 +3,11 @@
 import { useEffect } from "react";
 import { motion } from "motion/react";
 import { track, AnalyticsEvent } from "@/lib/analytics";
-import { OnyxLogoTypeIcon } from "@/components/icons/icons";
 import Text from "@/refresh-components/texts/Text";
 import BigButton from "@/app/craft/components/BigButton";
+import { useLocale } from "@/providers/LocaleProvider";
+import Image from "next/image";
+import auroraLogo from "@public/aurora-logo.png";
 
 interface BuildModeIntroContentProps {
   onClose: () => void;
@@ -16,6 +18,7 @@ export default function BuildModeIntroContent({
   onClose,
   onTryBuildMode,
 }: BuildModeIntroContentProps) {
+  const { t } = useLocale();
   // Track when user sees the craft intro
   useEffect(() => {
     track(AnalyticsEvent.SAW_CRAFT_INTRO);
@@ -32,7 +35,16 @@ export default function BuildModeIntroContent({
         >
           <div className="grid grid-cols-[1fr_auto_1fr] items-end">
             <div className="flex justify-end">
-              <OnyxLogoTypeIcon size={385} className="text-white" />
+              <div className="relative h-[220px] w-[220px] rounded-full ring-1 ring-white/20 overflow-hidden shadow-02">
+                <Image
+                  src={auroraLogo}
+                  alt="AuroraChat logo"
+                  fill
+                  sizes="220px"
+                  className="object-cover"
+                  priority
+                />
+              </div>
             </div>
             <div className="w-8"></div>
             <div className="flex justify-start">
@@ -49,7 +61,7 @@ export default function BuildModeIntroContent({
                       fontWeight: 500,
                     }}
                   >
-                    Craft
+                    {t("craft")}
                   </Text>
                 </span>
                 <span
@@ -77,7 +89,7 @@ export default function BuildModeIntroContent({
               onClose();
             }}
           >
-            Return Home
+            {t("return_home")}
           </BigButton>
           <BigButton
             primary
@@ -88,7 +100,7 @@ export default function BuildModeIntroContent({
               onTryBuildMode();
             }}
           >
-            Start Crafting
+            {t("start_crafting")}
           </BigButton>
         </motion.div>
       </div>

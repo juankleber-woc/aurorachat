@@ -80,7 +80,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
+      lang="pt-BR"
       className={cn(inter.variable, sora.variable, dmMono.variable)}
       suppressHydrationWarning
     >

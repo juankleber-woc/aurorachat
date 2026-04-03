@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useState } from "react";
+import { getCurrentUILocale, isPortugueseLocale } from "@/lib/ui-locale";
 
 export const useNightTime = () => {
   const [isNight, setIsNight] = useState(false);
@@ -85,11 +86,18 @@ export const timestampToReadableDate = (timestamp: string) => {
 };
 
 export const buildDateString = (date: Date | null) => {
+  const locale = getCurrentUILocale();
   return date
-    ? `${Math.round(
-        (new Date().getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
-      )} days ago`
-    : "Select a time range";
+    ? isPortugueseLocale(locale)
+      ? `${Math.round(
+          (new Date().getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+        )} dias atrás`
+      : `${Math.round(
+          (new Date().getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+        )} days ago`
+    : isPortugueseLocale(locale)
+      ? "Selecione um período"
+      : "Select a time range";
 };
 
 export const getFormattedDateRangeString = (
@@ -103,8 +111,9 @@ export const getFormattedDateRangeString = (
     day: "numeric",
     year: "numeric",
   };
-  const fromString = from.toLocaleDateString("en-US", options);
-  const toString = to.toLocaleDateString("en-US", options);
+  const locale = getCurrentUILocale();
+  const fromString = from.toLocaleDateString(locale, options);
+  const toString = to.toLocaleDateString(locale, options);
 
   return `${fromString} - ${toString}`;
 };
@@ -125,7 +134,7 @@ export const getDateRangeString = (from: Date | null, to: Date | null) => {
   if (fromString === toString) return fromString;
 
   if (toDiffDays === 0) {
-    return `${fromString} - Today`;
+    return `${fromString} - ${isPortugueseLocale(getCurrentUILocale()) ? "Hoje" : "Today"}`;
   }
 
   return `${fromString} - ${toString}`;
@@ -140,11 +149,16 @@ export const getTimeAgoString = (date: Date | null) => {
   const diffWeeks = Math.floor(diffDays / 7);
   const diffMonths = Math.floor(diffDays / 30);
 
-  if (now.toDateString() === date.toDateString()) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays}d ago`;
-  if (diffDays < 30) return `${diffWeeks}w ago`;
-  return `${diffMonths}mo ago`;
+  const locale = getCurrentUILocale();
+  if (now.toDateString() === date.toDateString()) {
+    return isPortugueseLocale(locale) ? "Hoje" : "Today";
+  }
+  if (diffDays === 1) {
+    return isPortugueseLocale(locale) ? "Ontem" : "Yesterday";
+  }
+  if (diffDays < 7) return isPortugueseLocale(locale) ? `${diffDays}d atrás` : `${diffDays}d ago`;
+  if (diffDays < 30) return isPortugueseLocale(locale) ? `${diffWeeks}sem atrás` : `${diffWeeks}w ago`;
+  return isPortugueseLocale(locale) ? `${diffMonths}m atrás` : `${diffMonths}mo ago`;
 };
 
 /**
@@ -153,7 +167,7 @@ export const getTimeAgoString = (date: Date | null) => {
  */
 export const formatDateShort = (dateStr: string | null | undefined): string => {
   if (!dateStr) return "—";
-  return new Date(dateStr).toLocaleDateString("en-US", {
+  return new Date(dateStr).toLocaleDateString(getCurrentUILocale(), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -209,14 +223,14 @@ export const getFormattedDateTime = (date: Date | null) => {
 
   if (isToday) {
     // If it's today, return the time in format like "3:45 PM"
-    return date.toLocaleTimeString("en-US", {
+    return date.toLocaleTimeString(getCurrentUILocale(), {
       hour: "numeric",
       minute: "2-digit",
-      hour12: true,
+      hour12: !isPortugueseLocale(getCurrentUILocale()),
     });
   } else {
     // Otherwise return the date in format like "Jan 15, 2023"
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString(getCurrentUILocale(), {
       month: "short",
       day: "numeric",
       year: "numeric",

@@ -12,7 +12,7 @@ import { uploadLicense } from "@/lib/billing/svc";
 import { LicenseStatus } from "@/lib/billing/interfaces";
 import { formatDateShort } from "@/lib/dateUtils";
 
-const BILLING_HELP_URL = "https://docs.onyx.app/more/billing";
+const BILLING_HELP_URL = "mailto:support@aurorachat.app";
 
 interface LicenseActivationCardProps {
   isOpen: boolean;
@@ -211,7 +211,7 @@ export default function LicenseActivationCard({
                     rel="noopener noreferrer"
                     className="billing-help-link"
                   >
-                    Billing Help
+                    AuroraChat Support
                   </a>
                 </Text>
               </Section>
