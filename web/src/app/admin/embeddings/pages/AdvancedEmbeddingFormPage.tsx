@@ -231,7 +231,7 @@ const AdvancedEmbeddingFormPage = forwardRef<
               <BooleanFormField
                 subtext={
                   NEXT_PUBLIC_CLOUD_ENABLED
-                    ? "Contextual RAG disabled in Onyx Cloud"
+                    ? "Contextual RAG disabled in AuroraChat Cloud"
                     : "Enable contextual RAG for all chunk sizes."
                 }
                 optional

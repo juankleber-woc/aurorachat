@@ -210,6 +210,11 @@ class AccessType(str, PyEnum):
     SYNC = "sync"
 
 
+class ConnectorScope(str, PyEnum):
+    ORGANIZATION = "organization"  # Admin-managed, visible to org users per access_type rules
+    USER = "user"  # User-managed, only visible to the creator
+
+
 class EmbeddingPrecision(str, PyEnum):
     # matches vespa tensor type
     # only support float / bfloat16 for now, since there's not a

@@ -21,6 +21,7 @@ from onyx.db.credentials import fetch_credential_by_id_for_user
 from onyx.db.engine.sql_engine import get_session_with_current_tenant
 from onyx.db.enums import AccessType
 from onyx.db.enums import ConnectorCredentialPairStatus
+from onyx.db.enums import ConnectorScope
 from onyx.db.enums import ProcessingMode
 from onyx.db.models import Connector
 from onyx.db.models import ConnectorCredentialPair
@@ -50,11 +51,20 @@ def _add_user_filters(
     stmt: Select[tuple[*R]], user: User, get_editable: bool = True
 ) -> Select[tuple[*R]]:
     if user.role == UserRole.ADMIN:
-        return stmt
+        # Admins see all ORGANIZATION-scoped pairs plus their own USER-scoped pairs
+        where_clause = (
+            ConnectorCredentialPair.scope == ConnectorScope.ORGANIZATION
+        ) | (
+            (ConnectorCredentialPair.scope == ConnectorScope.USER)
+            & (ConnectorCredentialPair.creator_id == user.id)
+        )
+        return stmt.where(where_clause)
 
-    # If anonymous user, only show public cc_pairs
+    # If anonymous user, only show public org-scoped cc_pairs
     if user.is_anonymous:
-        where_clause = ConnectorCredentialPair.access_type == AccessType.PUBLIC
+        where_clause = (
+            ConnectorCredentialPair.access_type == AccessType.PUBLIC
+        ) & (ConnectorCredentialPair.scope == ConnectorScope.ORGANIZATION)
         return stmt.where(where_clause)
 
     stmt = stmt.distinct()
@@ -73,36 +83,51 @@ def _add_user_filters(
 
     """
     Filter cc_pairs by:
-    - if the user is in the user_group that owns the cc_pair
-    - if the user is not a global_curator, they must also have a curator relationship
-    to the user_group
-    - if editing is being done, we also filter out cc_pairs that are owned by groups
-    that the user isn't a curator for
-    - if we are not editing, we show all cc_pairs in the groups the user is a curator
-    for (as well as public cc_pairs)
+    - USER-scoped: only the creator sees them
+    - ORGANIZATION-scoped:
+      - if the user is in the user_group that owns the cc_pair
+      - if the user is not a global_curator, they must also have a curator relationship
+        to the user_group
+      - if editing is being done, we also filter out cc_pairs that are owned by groups
+        that the user isn't a curator for
+      - if we are not editing, we show all cc_pairs in the groups the user is a curator
+        for (as well as public cc_pairs)
     """
 
-    where_clause = User__UG.user_id == user.id
+    # Always include USER-scoped pairs owned by this user
+    user_scoped_clause = (
+        ConnectorCredentialPair.scope == ConnectorScope.USER
+    ) & (ConnectorCredentialPair.creator_id == user.id)
+
+    # ORGANIZATION-scoped filtering (existing logic)
+    org_scope_filter = ConnectorCredentialPair.scope == ConnectorScope.ORGANIZATION
+    org_where_clause = (User__UG.user_id == user.id) & org_scope_filter
     if user.role == UserRole.CURATOR and get_editable:
-        where_clause &= User__UG.is_curator == True  # noqa: E712
+        org_where_clause &= User__UG.is_curator == True  # noqa: E712
     if get_editable:
         user_groups = select(User__UG.user_group_id).where(User__UG.user_id == user.id)
         if user.role == UserRole.CURATOR:
             user_groups = user_groups.where(
                 User__UserGroup.is_curator == True  # noqa: E712
             )
-        where_clause &= (
+        org_where_clause &= (
             ~exists()
             .where(UG__CCpair.cc_pair_id == ConnectorCredentialPair.id)
             .where(~UG__CCpair.user_group_id.in_(user_groups))
             .correlate(ConnectorCredentialPair)
         )
-        where_clause |= ConnectorCredentialPair.creator_id == user.id
+        org_where_clause |= (
+            ConnectorCredentialPair.creator_id == user.id
+        ) & org_scope_filter
     else:
-        where_clause |= ConnectorCredentialPair.access_type == AccessType.PUBLIC
-        where_clause |= ConnectorCredentialPair.access_type == AccessType.SYNC
+        org_where_clause |= (
+            ConnectorCredentialPair.access_type == AccessType.PUBLIC
+        ) & org_scope_filter
+        org_where_clause |= (
+            ConnectorCredentialPair.access_type == AccessType.SYNC
+        ) & org_scope_filter
 
-    return stmt.where(where_clause)
+    return stmt.where(user_scoped_clause | org_where_clause)
 
 
 def get_connector_credential_pairs_for_user(
@@ -519,6 +544,7 @@ def add_credential_to_connector(
     last_successful_index_time: datetime | None = None,
     seeding_flow: bool = False,
     processing_mode: ProcessingMode = ProcessingMode.REGULAR,
+    scope: ConnectorScope = ConnectorScope.ORGANIZATION,
 ) -> StatusResponse:
     connector = fetch_connector_by_id(connector_id, db_session)
 
@@ -585,6 +611,7 @@ def add_credential_to_connector(
         auto_sync_options=auto_sync_options,
         last_successful_index_time=last_successful_index_time,
         processing_mode=processing_mode,
+        scope=scope,
     )
     db_session.add(association)
     db_session.flush()  # make sure the association has an id

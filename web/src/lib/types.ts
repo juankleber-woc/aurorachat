@@ -324,10 +324,13 @@ export interface OAuthConfluenceFinalizeResponse {
   redirect_url: string;
 }
 
+export type ConnectorScope = "organization" | "user";
+
 export interface CCPairBasicInfo {
   has_successful_run: boolean;
   source: ValidSources;
   status: ConnectorCredentialPairStatus;
+  scope: ConnectorScope;
 }
 
 export type ConnectorSummary = {

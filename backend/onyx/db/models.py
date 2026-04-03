@@ -86,6 +86,7 @@ from onyx.db.enums import (
     DefaultAppMode,
     SwitchoverType,
     SharingScope,
+    ConnectorScope,
 )
 from onyx.configs.constants import NotificationType
 from onyx.configs.constants import SearchFeedbackType
@@ -797,6 +798,16 @@ class ConnectorCredentialPair(Base):
         nullable=False,
         default=ProcessingMode.REGULAR,
         server_default="REGULAR",
+    )
+
+    # Determines who can see and manage this connector-credential pair:
+    # ORGANIZATION: governed by access_type (public/private/sync) + group membership
+    # USER: only visible to the creator; used for personal connectors
+    scope: Mapped[ConnectorScope] = mapped_column(
+        Enum(ConnectorScope, native_enum=False),
+        nullable=False,
+        default=ConnectorScope.ORGANIZATION,
+        server_default="organization",
     )
 
     connector: Mapped["Connector"] = relationship(

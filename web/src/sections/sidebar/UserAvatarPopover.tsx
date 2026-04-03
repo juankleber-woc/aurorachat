@@ -108,7 +108,7 @@ function SettingsPopover({
           <LineItem
             key="help-faq"
             icon={SvgExternalLink}
-            href="https://docs.onyx.app"
+            href="https://aurorachat.app"
             target="_blank"
             rel="noopener noreferrer"
           >

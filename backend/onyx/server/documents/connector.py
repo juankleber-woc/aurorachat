@@ -42,6 +42,7 @@ from onyx.configs.constants import OnyxCeleryTask
 from onyx.configs.constants import PUBLIC_API_TAGS
 from onyx.connectors.exceptions import ConnectorValidationError
 from onyx.connectors.factory import validate_ccpair_for_user
+from onyx.connectors.models import InputType
 from onyx.connectors.google_utils.google_auth import (
     get_google_oauth_creds,
 )
@@ -89,6 +90,9 @@ from onyx.db.connector_credential_pair import (
 )
 from onyx.db.connector_credential_pair import get_cc_pair_groups_for_ids
 from onyx.db.connector_credential_pair import get_connector_credential_pair
+from onyx.db.connector_credential_pair import (
+    get_connector_credential_pair_from_id_for_user,
+)
 from onyx.db.connector_credential_pair import get_connector_credential_pairs_for_user
 from onyx.db.connector_credential_pair import (
     get_connector_credential_pairs_for_user_parallel,
@@ -104,6 +108,7 @@ from onyx.db.document import get_document_counts_for_all_cc_pairs
 from onyx.db.engine.sql_engine import get_session
 from onyx.db.enums import AccessType
 from onyx.db.enums import ConnectorCredentialPairStatus
+from onyx.db.enums import ConnectorScope
 from onyx.db.enums import IndexingMode
 from onyx.db.enums import ProcessingMode
 from onyx.db.federated import fetch_all_federated_connectors_parallel
@@ -2019,6 +2024,7 @@ class BasicCCPairInfo(BaseModel):
     has_successful_run: bool
     source: DocumentSource
     status: ConnectorCredentialPairStatus
+    scope: ConnectorScope = ConnectorScope.ORGANIZATION
 
 
 @router.get("/connector-status", tags=PUBLIC_API_TAGS)
@@ -2039,6 +2045,7 @@ def get_basic_connector_indexing_status(
             has_successful_run=cc_pair.last_successful_index_time is not None,
             source=cc_pair.connector.source,
             status=cc_pair.status,
+            scope=cc_pair.scope,
         )
         for cc_pair in cc_pairs
         if cc_pair.connector.source != DocumentSource.INGESTION_API
@@ -2126,3 +2133,189 @@ def trigger_indexing_for_cc_pair(
     )
 
     return num_triggers
+
+
+# ---------------------------------------------------------------------------
+# User-scoped connector endpoints
+# Regular users can create and manage their own personal connectors.
+# These are isolated from org-level connectors and only visible to the creator.
+# ---------------------------------------------------------------------------
+
+
+class UserConnectorCreateRequest(BaseModel):
+    """Request body for creating a personal (user-scoped) connector."""
+
+    name: str
+    source: DocumentSource
+    input_type: InputType
+    connector_specific_config: dict[str, Any]
+    credential_json: dict[str, Any]
+    refresh_freq: int | None = None
+    indexing_start: datetime | None = None
+
+
+class UserConnectorResponse(BaseModel):
+    cc_pair_id: int
+    connector_id: int
+    credential_id: int
+    name: str
+    source: DocumentSource
+    status: ConnectorCredentialPairStatus
+    scope: ConnectorScope
+    has_successful_run: bool
+
+
+@router.post("/user/connector", tags=PUBLIC_API_TAGS)
+def create_user_connector(
+    connector_data: UserConnectorCreateRequest,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> UserConnectorResponse:
+    """Create a personal connector visible only to the authenticated user."""
+    if user is None:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    _validate_connector_allowed(connector_data.source)
+
+    # Create the connector
+    connector_base = ConnectorBase(
+        name=connector_data.name,
+        source=connector_data.source,
+        input_type=connector_data.input_type,
+        connector_specific_config=connector_data.connector_specific_config,
+        refresh_freq=connector_data.refresh_freq,
+        indexing_start=connector_data.indexing_start,
+    )
+    connector_response = create_connector(
+        db_session=db_session,
+        connector_data=connector_base,
+    )
+    connector_id = cast(int, connector_response.id)
+
+    # Create a user-owned, non-public credential
+    credential_base = CredentialBase(
+        credential_json=connector_data.credential_json,
+        admin_public=False,
+        source=connector_data.source,
+        name=connector_data.name,
+    )
+    credential = create_credential(
+        credential_data=credential_base,
+        user=user,
+        db_session=db_session,
+    )
+
+    # Link them with USER scope so only the creator can see this pair
+    result = add_credential_to_connector(
+        db_session=db_session,
+        user=user,
+        connector_id=connector_id,
+        credential_id=credential.id,
+        cc_pair_name=connector_data.name,
+        access_type=AccessType.PRIVATE,
+        groups=None,
+        scope=ConnectorScope.USER,
+    )
+
+    if not result.success:
+        raise HTTPException(status_code=400, detail=result.message)
+
+    cc_pair = get_connector_credential_pair(
+        db_session=db_session,
+        connector_id=connector_id,
+        credential_id=credential.id,
+    )
+    if cc_pair is None:
+        raise HTTPException(status_code=500, detail="Failed to retrieve created connector")
+
+    return UserConnectorResponse(
+        cc_pair_id=cc_pair.id,
+        connector_id=connector_id,
+        credential_id=credential.id,
+        name=connector_data.name,
+        source=connector_data.source,
+        status=cc_pair.status,
+        scope=ConnectorScope.USER,
+        has_successful_run=cc_pair.last_successful_index_time is not None,
+    )
+
+
+@router.get("/user/connectors", tags=PUBLIC_API_TAGS)
+def list_user_connectors(
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> list[UserConnectorResponse]:
+    """List all personal connectors for the authenticated user."""
+    if user is None:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    cc_pairs = get_connector_credential_pairs_for_user(
+        db_session=db_session,
+        user=user,
+        get_editable=False,
+        eager_load_connector=True,
+    )
+
+    return [
+        UserConnectorResponse(
+            cc_pair_id=cc_pair.id,
+            connector_id=cc_pair.connector_id,
+            credential_id=cc_pair.credential_id,
+            name=cc_pair.name,
+            source=cc_pair.connector.source,
+            status=cc_pair.status,
+            scope=cc_pair.scope,
+            has_successful_run=cc_pair.last_successful_index_time is not None,
+        )
+        for cc_pair in cc_pairs
+        if cc_pair.scope == ConnectorScope.USER
+        and cc_pair.creator_id == user.id
+        and cc_pair.processing_mode == ProcessingMode.REGULAR
+    ]
+
+
+@router.delete("/user/connector/{cc_pair_id}", tags=PUBLIC_API_TAGS)
+def delete_user_connector(
+    cc_pair_id: int,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> StatusResponse:
+    """Delete a personal connector. Only the creator can delete it."""
+    if user is None:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    cc_pair = get_connector_credential_pair_from_id_for_user(
+        cc_pair_id=cc_pair_id,
+        db_session=db_session,
+        user=user,
+        get_editable=True,
+    )
+
+    if cc_pair is None:
+        raise HTTPException(status_code=404, detail="Connector not found")
+
+    if cc_pair.scope != ConnectorScope.USER:
+        raise HTTPException(
+            status_code=403,
+            detail="Cannot delete organization connectors from this endpoint",
+        )
+
+    if cc_pair.creator_id != user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="You can only delete your own personal connectors",
+        )
+
+    connector_id = cc_pair.connector_id
+    credential_id = cc_pair.credential_id
+
+    db_session.delete(cc_pair)
+    db_session.commit()
+
+    # Delete the underlying connector and credential (user-owned, safe to remove)
+    try:
+        delete_connector(db_session=db_session, connector_id=connector_id)
+    except Exception:
+        pass  # Connector may already be gone or have other associations
+
+    return StatusResponse(success=True, message="Personal connector deleted successfully")

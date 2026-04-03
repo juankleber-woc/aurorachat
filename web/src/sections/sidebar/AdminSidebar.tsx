@@ -139,16 +139,7 @@ function buildItems(
 
   // 6. Organization (admin only)
   if (!isCurator) {
-    if (hasSubscription) {
-      add(SECTIONS.ORGANIZATION, ADMIN_ROUTES.BILLING);
-    } else {
-      items.push({
-        section: SECTIONS.ORGANIZATION,
-        name: "Upgrade Plan",
-        icon: SvgArrowUpCircle,
-        link: ADMIN_ROUTES.BILLING.path,
-      });
-    }
+    add(SECTIONS.ORGANIZATION, ADMIN_ROUTES.BILLING);
     add(SECTIONS.ORGANIZATION, ADMIN_ROUTES.TOKEN_RATE_LIMITS);
     addDisabled(SECTIONS.ORGANIZATION, ADMIN_ROUTES.THEME, !enableEnterprise);
   }
@@ -264,10 +255,10 @@ export default function AdminSidebar({ enableCloudSS }: AdminSidebarProps) {
               <Text text03 secondaryAction>
                 <a
                   className="underline"
-                  href="https://onyx.app"
+                  href="https://aurorachat.app"
                   target="_blank"
                 >
-                  Onyx
+                  AuroraChat
                 </a>
               </Text>
               <Text text03 secondaryBody>

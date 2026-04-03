@@ -12,8 +12,11 @@ import {
   SvgKey,
   SvgLock,
   SvgMinusCircle,
+  SvgOrganization,
+  SvgPlug,
   SvgTrash,
   SvgUnplug,
+  SvgUser,
 } from "@opal/icons";
 import { getSourceMetadata } from "@/lib/sources";
 import Card from "@/refresh-components/cards/Card";
@@ -828,7 +831,7 @@ function ChatPreferencesSettings() {
         <Card>
           <InputLayouts.Horizontal
             title="Default Model"
-            description="This model will be used by Onyx by default in your chats."
+            description="This model will be used by AuroraChat by default in your chats."
           >
             <LLMPopover
               llmManager={llmManager}
@@ -913,7 +916,7 @@ function ChatPreferencesSettings() {
         <Card>
           <InputLayouts.Horizontal
             title="Reference Stored Memories"
-            description="Let Onyx reference stored memories in chats."
+            description="Let AuroraChat reference stored memories in chats."
           >
             <Switch
               checked={personalizationValues.use_memories}
@@ -925,7 +928,7 @@ function ChatPreferencesSettings() {
           </InputLayouts.Horizontal>
           <InputLayouts.Horizontal
             title="Update Memories"
-            description="Let Onyx generate and update stored memories."
+            description="Let AuroraChat generate and update stored memories."
           >
             <Switch
               checked={personalizationValues.enable_memory_tool}
@@ -1237,7 +1240,7 @@ function AccountsAccessSettings() {
               Any application using the token{" "}
               <Text className="!font-bold">{tokenToDelete.name}</Text>{" "}
               <Text secondaryMono>({tokenToDelete.token_display})</Text> will
-              lose access to Onyx. This action cannot be undone.
+              lose access to AuroraChat. This action cannot be undone.
             </Text>
             <Text>Are you sure you want to revoke this token?</Text>
           </Section>
@@ -1389,7 +1392,7 @@ function AccountsAccessSettings() {
               variant="section"
               widthVariant="full"
             />
-            {canCreateTokens ? (
+            {canCreateTokens && (
               <Card padding={0.25}>
                 <Section gap={0}>
                   <Section flexDirection="row" padding={0.25} gap={0.5}>
@@ -1473,17 +1476,6 @@ function AccountsAccessSettings() {
                       );
                     })}
                   </Section>
-                </Section>
-              </Card>
-            ) : (
-              <Card>
-                <Section flexDirection="row" justifyContent="between">
-                  <Text text03 secondaryBody>
-                    Access tokens require an active paid subscription.
-                  </Text>
-                  <Button prominence="secondary" href="/admin/billing">
-                    Upgrade Plan
-                  </Button>
                 </Section>
               </Card>
             )}
@@ -1570,7 +1562,7 @@ function FederatedConnectorCard({
         >
           <Section gap={0.5} alignItems="start">
             <Text>
-              Onyx will no longer be able to access or search content from your{" "}
+              AuroraChat will no longer be able to access or search content from your{" "}
               <Text className="!font-bold">{sourceMetadata.displayName}</Text>{" "}
               account.
             </Text>
@@ -1631,8 +1623,14 @@ function ConnectorsSettings() {
     ConnectorCredentialPairStatus.INITIAL_INDEXING,
   ];
 
-  // Group indexed connectors by source
-  const groupedConnectors = ccPairs.reduce(
+  // Split cc pairs by scope
+  const orgCCPairs = ccPairs.filter(
+    (p) => !p.scope || p.scope === "organization"
+  );
+  const userCCPairs = ccPairs.filter((p) => p.scope === "user");
+
+  // Group org-level indexed connectors by source
+  const groupedOrgConnectors = orgCCPairs.reduce(
     (acc, ccPair) => {
       if (!acc[ccPair.source]) {
         acc[ccPair.source] = {
@@ -1654,24 +1652,87 @@ function ConnectorsSettings() {
     >
   );
 
-  const hasConnectors =
-    Object.keys(groupedConnectors).length > 0 || federatedConnectors.length > 0;
+  // Group user-level connectors by source
+  const groupedUserConnectors = userCCPairs.reduce(
+    (acc, ccPair) => {
+      if (!acc[ccPair.source]) {
+        acc[ccPair.source] = {
+          source: ccPair.source,
+          hasActiveConnector: false,
+        };
+      }
+      if (ACTIVE_STATUSES.includes(ccPair.status)) {
+        acc[ccPair.source]!.hasActiveConnector = true;
+      }
+      return acc;
+    },
+    {} as Record<
+      string,
+      {
+        source: ValidSources;
+        hasActiveConnector: boolean;
+      }
+    >
+  );
+
+  const hasOrgConnectors =
+    Object.keys(groupedOrgConnectors).length > 0 || federatedConnectors.length > 0;
+  const hasUserConnectors = Object.keys(groupedUserConnectors).length > 0;
 
   return (
     <Section gap={2}>
+      {/* Personal Connectors */}
       <Section gap={0.75} justifyContent="start">
-        <Content
-          title="Connectors"
+        <ContentAction
+          title="Your Connectors"
+          description="Personal connectors only visible to you"
           sizePreset="main-content"
           variant="section"
+          icon={SvgUser}
+          widthVariant="full"
+          rightChildren={
+            <Button
+              variant="default"
+              prominence="secondary"
+              icon={SvgPlug}
+              href="/admin/connectors"
+              size="sm"
+            >
+              Add Connector
+            </Button>
+          }
+        />
+        {hasUserConnectors ? (
+          Object.values(groupedUserConnectors).map((connector) => (
+            <IndexedConnectorCard
+              key={`user-${connector.source}`}
+              source={connector.source}
+              isActive={connector.hasActiveConnector}
+            />
+          ))
+        ) : (
+          <EmptyMessage title="No personal connectors yet." />
+        )}
+      </Section>
+
+      <Separator />
+
+      {/* Organization Connectors */}
+      <Section gap={0.75} justifyContent="start">
+        <Content
+          title="Organization Connectors"
+          description="Connectors set up by your organization admins"
+          sizePreset="main-content"
+          variant="section"
+          icon={SvgOrganization}
           widthVariant="full"
         />
-        {hasConnectors ? (
+        {hasOrgConnectors ? (
           <>
-            {/* Indexed Connectors */}
-            {Object.values(groupedConnectors).map((connector) => (
+            {/* Indexed Org Connectors */}
+            {Object.values(groupedOrgConnectors).map((connector) => (
               <IndexedConnectorCard
-                key={connector.source}
+                key={`org-${connector.source}`}
                 source={connector.source}
                 isActive={connector.hasActiveConnector}
               />
