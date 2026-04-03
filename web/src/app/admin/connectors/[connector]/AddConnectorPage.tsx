@@ -401,7 +401,10 @@ export default function AddConnector({
           );
 
           const connectorCreationPromise = (async () => {
-            const connectorPayload = {
+            const connectorPayload: ConnectorBase<any> & {
+              access_type: "private" | "public" | "sync";
+              groups: number[];
+            } = {
               connector_specific_config: transformedConnectorSpecificConfig,
               input_type: isLoadState(connector) ? "load_state" : "poll",
               name: name,
