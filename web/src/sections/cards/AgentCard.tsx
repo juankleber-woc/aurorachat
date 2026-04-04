@@ -35,6 +35,7 @@ import { CardItemLayout } from "@/layouts/general-layouts";
 import { Content } from "@opal/layouts";
 import { Interactive } from "@opal/core";
 import { Card } from "@/refresh-components/cards";
+import useScreenSize from "@/hooks/useScreenSize";
 
 export interface AgentCardProps {
   agent: MinimalPersonaSnapshot;
@@ -49,6 +50,7 @@ export default function AgentCard({ agent }: AgentCardProps) {
     [agent.id, pinnedAgents]
   );
   const { user, isAdmin, isCurator } = useUser();
+  const { isMobile } = useScreenSize();
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
   const canUpdateFeaturedStatus = isAdmin || isCurator;
   const isOwnedByUser = checkUserOwnsAgent(user, agent);
@@ -153,7 +155,9 @@ export default function AgentCard({ agent }: AgentCardProps) {
                         router.push(`/ee/agents/stats/${agent.id}` as Route)
                       )}
                       tooltip="View Agent Stats"
-                      className="hidden group-hover/AgentCard:flex"
+                      className={cn(
+                        isMobile ? "flex" : "hidden group-hover/AgentCard:flex"
+                      )}
                     />
                   )}
                   {isOwnedByUser && (
@@ -165,7 +169,9 @@ export default function AgentCard({ agent }: AgentCardProps) {
                         router.push(`/app/agents/edit/${agent.id}` as Route)
                       )}
                       tooltip="Edit Agent"
-                      className="hidden group-hover/AgentCard:flex"
+                      className={cn(
+                        isMobile ? "flex" : "hidden group-hover/AgentCard:flex"
+                      )}
                     />
                   )}
                   {isOwnedByUser && (
@@ -175,7 +181,9 @@ export default function AgentCard({ agent }: AgentCardProps) {
                       tertiary
                       onClick={noProp(() => shareAgentModal.toggle(true))}
                       tooltip="Share Agent"
-                      className="hidden group-hover/AgentCard:flex"
+                      className={cn(
+                        isMobile ? "flex" : "hidden group-hover/AgentCard:flex"
+                      )}
                     />
                   )}
                   {/* TODO(@raunakab): migrate to opal Button once className/iconClassName is resolved */}
@@ -185,7 +193,9 @@ export default function AgentCard({ agent }: AgentCardProps) {
                     onClick={noProp(() => togglePinnedAgent(agent, !pinned))}
                     tooltip={pinned ? "Unpin from Sidebar" : "Pin to Sidebar"}
                     className={cn(
-                      !pinned && "hidden group-hover/AgentCard:flex"
+                      isMobile
+                        ? "flex"
+                        : !pinned && "hidden group-hover/AgentCard:flex"
                     )}
                   />
                 </>
@@ -194,9 +204,9 @@ export default function AgentCard({ agent }: AgentCardProps) {
           </div>
 
           {/* Footer section - bg-background-tint-01 */}
-          <div className="bg-background-tint-01 p-1 flex flex-row items-end justify-between w-full">
+          <div className="flex w-full flex-col gap-2 bg-background-tint-01 p-1 sm:flex-row sm:items-end sm:justify-between">
             {/* Left side - creator and actions */}
-            <div className="flex flex-col gap-1 py-1 px-2">
+            <div className="flex min-w-0 flex-col gap-1 px-2 py-1">
               <Content
                 icon={SvgUser}
                 title={agent.owner?.email || "AuroraChat"}
@@ -220,11 +230,12 @@ export default function AgentCard({ agent }: AgentCardProps) {
             </div>
 
             {/* Right side - Start Chat button */}
-            <div className="p-0.5">
+            <div className="w-full p-0.5 sm:w-auto">
               <Button
                 prominence="tertiary"
                 rightIcon={SvgBubbleText}
                 onClick={noProp(handleStartChat)}
+                className="w-full sm:w-auto"
               >
                 Start Chat
               </Button>

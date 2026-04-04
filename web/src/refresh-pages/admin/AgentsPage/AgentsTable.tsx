@@ -187,24 +187,28 @@ export default function AgentsTable() {
         placeholder="Search agents..."
         leftSearchIcon
       />
-      <Table
-        data={agentRows}
-        columns={columns}
-        getRowId={(row) => String(row.id)}
-        pageSize={PAGE_SIZE}
-        searchTerm={searchTerm}
-        draggable={{
-          onReorder: handleReorder,
-        }}
-        emptyState={
-          <IllustrationContent
-            illustration={SvgNoResult}
-            title="No agents found"
-            description="No agents match the current search."
+      <div className="w-full overflow-x-auto">
+        <div className="min-w-[48rem]">
+          <Table
+            data={agentRows}
+            columns={columns}
+            getRowId={(row) => String(row.id)}
+            pageSize={PAGE_SIZE}
+            searchTerm={searchTerm}
+            draggable={{
+              onReorder: handleReorder,
+            }}
+            emptyState={
+              <IllustrationContent
+                illustration={SvgNoResult}
+                title="No agents found"
+                description="No agents match the current search."
+              />
+            }
+            footer={{}}
           />
-        }
-        footer={{}}
-      />
+        </div>
+      </div>
     </div>
   );
 }

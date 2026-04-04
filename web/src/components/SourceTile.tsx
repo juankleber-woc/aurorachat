@@ -25,7 +25,9 @@ export default function SourceTile({
               justify-center
               p-4
               rounded-lg
-              w-40
+              w-full
+              min-h-[7.5rem]
+              sm:w-40
               cursor-pointer
               shadow-md
               bg-background-tint-00
@@ -36,7 +38,7 @@ export default function SourceTile({
       href={navigationUrl as Route}
     >
       <SourceIcon sourceType={sourceMetadata.internalName} iconSize={24} />
-      <Text as="p" className="pt-2">
+      <Text as="p" className="pt-2 text-center">
         {sourceMetadata.displayName}
       </Text>
     </Link>

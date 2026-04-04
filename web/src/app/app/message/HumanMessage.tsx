@@ -201,7 +201,7 @@ const HumanMessage = React.memo(function HumanMessage({
     <Hoverable.Root group="humanMessage" widthVariant="full">
       <div
         id="onyx-human-message"
-        className="flex flex-col justify-end w-full relative"
+        className="relative flex w-full flex-col justify-end"
       >
         <FileDisplay files={files || []} />
         {isEditing ? (
@@ -222,10 +222,10 @@ const HumanMessage = React.memo(function HumanMessage({
         ) : (
           <div className="flex justify-end">
             {onEdit && !isMobile && copyEditButton}
-            <div className="md:max-w-[37.5rem]">
+            <div className="w-full max-w-full sm:w-auto md:max-w-[37.5rem]">
               <div
                 className={
-                  "max-w-[30rem] md:max-w-[37.5rem] whitespace-break-spaces break-anywhere rounded-t-16 rounded-bl-16 bg-background-tint-02 py-2 px-3"
+                  "w-full max-w-full whitespace-break-spaces break-anywhere rounded-t-16 rounded-bl-16 bg-background-tint-02 px-3 py-2 sm:max-w-[30rem] md:max-w-[37.5rem]"
                 }
                 onCopy={(e) => {
                   const selection = window.getSelection();
@@ -250,7 +250,7 @@ const HumanMessage = React.memo(function HumanMessage({
             </div>
           </div>
         )}
-        <div className="flex justify-end pt-1">
+        <div className="flex flex-wrap justify-end gap-2 pt-1">
           {!isEditing && onEdit && isMobile && copyEditButton}
           {currentMessageInd !== undefined &&
             onMessageSelection &&

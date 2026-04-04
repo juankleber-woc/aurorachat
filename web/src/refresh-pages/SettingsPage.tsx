@@ -1741,6 +1741,7 @@ function ConnectorsSettings() {
               icon={SvgPlug}
               href="/app/settings/connectors/add"
               size="sm"
+              className="w-full sm:w-auto"
             >
               Add Connector
             </Button>

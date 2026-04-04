@@ -51,7 +51,7 @@ function AgentsSection({ title, description, agents }: AgentsSectionProps) {
           {description}
         </Text>
       </div>
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-2">
         {agents
           .sort((a, b) => b.id - a.id)
           .map((agent) => (
@@ -430,14 +430,15 @@ export default function AgentsNavigationPage() {
             href="/app/agents/create"
             icon={SvgPlus}
             aria-label="AgentsPage/new-agent-button"
+            className="w-full sm:w-auto"
           >
             New Agent
           </Button>
         }
       >
         <div className="flex flex-col gap-2">
-          <div className="flex flex-row items-center gap-2">
-            <div className="flex-[2]">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+            <div className="w-full lg:flex-[2]">
               <InputTypeIn
                 ref={searchInputRef}
                 placeholder="Search agents..."
@@ -446,7 +447,7 @@ export default function AgentsNavigationPage() {
                 leftSearchIcon
               />
             </div>
-            <div className="flex-1">
+            <div className="w-full lg:flex-1">
               <Tabs
                 value={activeTab}
                 onValueChange={(value) => setActiveTab(value as "all" | "your")}
@@ -458,7 +459,7 @@ export default function AgentsNavigationPage() {
               </Tabs>
             </div>
           </div>
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-wrap gap-2">
             <Popover
               open={creatorFilterOpen}
               onOpenChange={setCreatorFilterOpen}

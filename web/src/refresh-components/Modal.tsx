@@ -77,18 +77,18 @@ const useModalContext = () => {
 };
 
 const widthClasses = {
-  full: "w-[80dvw]",
-  xl: "w-[60rem]",
-  lg: "w-[50rem]",
-  md: "w-[40rem]",
-  sm: "w-[30rem]",
+  full: "w-[min(96dvw,80rem)]",
+  xl: "w-[min(96dvw,60rem)]",
+  lg: "w-[min(96dvw,50rem)]",
+  md: "w-[min(96dvw,40rem)]",
+  sm: "w-[min(96dvw,30rem)]",
 };
 
 const heightClasses = {
   fit: "h-fit",
-  sm: "max-h-[30rem] overflow-y-auto",
-  lg: "max-h-[calc(100dvh-4rem)] overflow-y-auto",
-  full: "h-[80dvh] overflow-y-auto",
+  sm: "max-h-[min(30rem,calc(100dvh-2rem))] overflow-y-auto",
+  lg: "max-h-[calc(100dvh-2rem)] overflow-y-auto",
+  full: "h-[min(80dvh,calc(100dvh-2rem))] overflow-y-auto",
 };
 
 /**

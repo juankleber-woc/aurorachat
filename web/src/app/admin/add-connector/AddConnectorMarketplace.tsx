@@ -297,7 +297,7 @@ export function AddConnectorMarketplace({
           value={rawSearchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
           onKeyDown={handleKeyPress}
-          className="w-96 flex-none"
+          className="w-full max-w-md flex-none"
         />
 
         {dedupedPopular.length > 0 && (
@@ -305,7 +305,7 @@ export function AddConnectorMarketplace({
             <Text as="p" headingH3>
               Popular
             </Text>
-            <div className="flex flex-wrap gap-4 p-4">
+            <div className="grid grid-cols-2 gap-3 p-2 sm:flex sm:flex-wrap sm:gap-4 sm:p-4 lg:grid lg:grid-cols-4">
               {dedupedPopular.map((source) => (
                 <SourceTileTooltipWrapper
                   preSelect={false}
@@ -327,7 +327,7 @@ export function AddConnectorMarketplace({
               <Text as="p" headingH3>
                 {category}
               </Text>
-              <div className="flex flex-wrap gap-4 p-4">
+              <div className="grid grid-cols-2 gap-3 p-2 sm:flex sm:flex-wrap sm:gap-4 sm:p-4 lg:grid lg:grid-cols-4">
                 {sources.map((source, sourceInd) => (
                   <SourceTileTooltipWrapper
                     preSelect={
