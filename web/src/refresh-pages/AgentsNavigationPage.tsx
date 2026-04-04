@@ -426,14 +426,15 @@ export default function AgentsNavigationPage() {
         title="Agents"
         description="Customize AI behavior and knowledge for you and your team's use cases."
         rightChildren={
-          <Button
-            href="/app/agents/create"
-            icon={SvgPlus}
-            aria-label="AgentsPage/new-agent-button"
-            className="w-full sm:w-auto"
-          >
-            New Agent
-          </Button>
+          <div className="w-full sm:w-auto">
+            <Button
+              href="/app/agents/create"
+              icon={SvgPlus}
+              aria-label="AgentsPage/new-agent-button"
+            >
+              New Agent
+            </Button>
+          </div>
         }
       >
         <div className="flex flex-col gap-2">

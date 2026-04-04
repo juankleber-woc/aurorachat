@@ -1735,16 +1735,17 @@ function ConnectorsSettings() {
           icon={SvgUser}
           widthVariant="full"
           rightChildren={
-            <Button
-              variant="default"
-              prominence="secondary"
-              icon={SvgPlug}
-              href="/app/settings/connectors/add"
-              size="sm"
-              className="w-full sm:w-auto"
-            >
-              Add Connector
-            </Button>
+            <div className="w-full sm:w-auto">
+              <Button
+                variant="default"
+                prominence="secondary"
+                icon={SvgPlug}
+                href="/app/settings/connectors/add"
+                size="sm"
+              >
+                Add Connector
+              </Button>
+            </div>
           }
         />
         {hasUserConnectors ? (

@@ -235,7 +235,6 @@ export default function AgentCard({ agent }: AgentCardProps) {
                 prominence="tertiary"
                 rightIcon={SvgBubbleText}
                 onClick={noProp(handleStartChat)}
-                className="w-full sm:w-auto"
               >
                 Start Chat
               </Button>
