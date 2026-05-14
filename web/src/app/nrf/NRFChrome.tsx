@@ -70,8 +70,10 @@ export default function NRFChrome() {
     appFocus.isNewSession() && state.phase === "idle" ? state.appMode : "chat";
 
   const customFooterContent =
-    settings?.enterpriseSettings?.custom_lower_disclaimer_content ||
-    `[InovaChat ${settings?.webVersion || "dev"}](https://inovachat.app/) - ${APP_SLOGAN}`;
+    settings?.enterpriseSettings?.custom_lower_disclaimer_content || "";
+
+
+
 
   const showModeToggle =
     isPaidEnterpriseFeaturesEnabled &&

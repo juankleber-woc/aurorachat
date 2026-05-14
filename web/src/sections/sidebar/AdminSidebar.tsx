@@ -246,29 +246,7 @@ export default function AdminSidebar({ enableCloudSS }: AdminSidebarProps) {
                 widthVariant="full"
               />
             </div>
-            <div className="flex flex-row gap-1 p-[0.38rem] w-full">
-              <Text text03 secondaryAction>
-                <a
-                  className="underline"
-                  href="https://inovachat.app"
-                  target="_blank"
-                >
-                  InovaChat
-                </a>
-              </Text>
-              <Text text03 secondaryBody>
-                |
-              </Text>
-              {settings.webVersion ? (
-                <Text text03 secondaryBody>
-                  {settings.webVersion}
-                </Text>
-              ) : (
-                <Text text03 secondaryBody>
-                  {APP_SLOGAN}
-                </Text>
-              )}
-            </div>
+
           </Section>
         }
       >
