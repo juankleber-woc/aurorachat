@@ -92,6 +92,28 @@ def get_cc_source_full_info(
     ]
 
 
+@router.get("/user/similar-credentials/{source_type}")
+def get_user_source_credentials(
+    source_type: DocumentSource,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+    get_editable: bool = Query(
+        False, description="If true, return editable credentials"
+    ),
+) -> list[CredentialSnapshot]:
+    credentials = fetch_credentials_by_source_for_user(
+        db_session=db_session,
+        user=user,
+        document_source=source_type,
+        get_editable=get_editable,
+    )
+
+    return [
+        CredentialSnapshot.from_credential_db_model(credential)
+        for credential in credentials
+    ]
+
+
 @router.delete("/admin/credential/{credential_id}")
 def delete_credential_by_id_admin(
     credential_id: int,
@@ -159,6 +181,33 @@ def create_credential_from_model(
     )
 
 
+@router.post("/user/credential")
+def create_user_credential_from_model(
+    credential_info: CredentialBase,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> ObjectCreationIdResponse:
+    # Personal credentials must always stay private to the creator.
+    user_scoped_credential = CredentialBase(
+        credential_json=credential_info.credential_json,
+        admin_public=False,
+        curator_public=False,
+        groups=[],
+        name=credential_info.name,
+        source=credential_info.source,
+    )
+
+    # Temporary fix for empty Google App credentials
+    if user_scoped_credential.source == DocumentSource.GMAIL:
+        cleanup_gmail_credentials(db_session=db_session)
+
+    credential = create_credential(user_scoped_credential, user, db_session)
+    return ObjectCreationIdResponse(
+        id=credential.id,
+        credential=CredentialSnapshot.from_credential_db_model(credential),
+    )
+
+
 @router.post("/credential/private-key")
 def create_credential_with_private_key(
     credential_json: str = Form(...),
@@ -214,6 +263,56 @@ def create_credential_with_private_key(
 
     # Temporary fix for empty Google App credentials
     if DocumentSource(source) == DocumentSource.GMAIL:
+        cleanup_gmail_credentials(db_session=db_session)
+
+    credential = create_credential(credential_info, user, db_session)
+    return ObjectCreationIdResponse(
+        id=credential.id,
+        credential=CredentialSnapshot.from_credential_db_model(credential),
+    )
+
+
+@router.post("/user/credential/private-key")
+def create_user_credential_with_private_key(
+    credential_json: str = Form(...),
+    name: str | None = Form(None),
+    source: str = Form(...),
+    user: User = Depends(current_user),
+    uploaded_file: UploadFile = File(...),
+    field_key: str = Form(...),
+    type_definition_key: str = Form(...),
+    db_session: Session = Depends(get_session),
+) -> ObjectCreationIdResponse:
+    try:
+        credential_data = json.loads(credential_json)
+    except json.JSONDecodeError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid JSON in credential_json: {str(e)}",
+        )
+
+    private_key_processor: ProcessPrivateKeyFileProtocol | None = (
+        FILE_TYPE_TO_FILE_PROCESSOR.get(PrivateKeyFileTypes(type_definition_key))
+    )
+    if private_key_processor is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid type definition key for private key file",
+        )
+    private_key_content: str = private_key_processor(uploaded_file)
+    credential_data[field_key] = private_key_content
+
+    credential_info = CredentialBase(
+        credential_json=credential_data,
+        admin_public=False,
+        curator_public=False,
+        groups=[],
+        name=name,
+        source=DocumentSource(source),
+    )
+
+    # Temporary fix for empty Google App credentials
+    if credential_info.source == DocumentSource.GMAIL:
         cleanup_gmail_credentials(db_session=db_session)
 
     credential = create_credential(credential_info, user, db_session)

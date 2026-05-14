@@ -108,9 +108,14 @@ export async function updateConnector<T>(
 }
 
 export async function deleteConnector(
-  connectorId: number
+  connectorId: number,
+  scope: ConnectorScope = "organization"
 ): Promise<string | null> {
-  const response = await fetch(`/api/manage/admin/connector/${connectorId}`, {
+  const endpoint =
+    scope === "user"
+      ? `/api/manage/user/connector-definition/${connectorId}`
+      : `/api/manage/admin/connector/${connectorId}`;
+  const response = await fetch(endpoint, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

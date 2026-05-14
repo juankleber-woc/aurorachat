@@ -42,6 +42,7 @@ import MCPLineItem, {
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import { SvgActions, SvgChevronRight, SvgKey, SvgSliders } from "@opal/icons";
 import { Button } from "@opal/components";
+import { getEffectiveAgentTools } from "@/lib/tools/getEffectiveAgentTools";
 
 function buildTooltipMessage(
   actionDescription: string,
@@ -158,6 +159,7 @@ type SecondaryViewState =
 
 export interface ActionsPopoverProps {
   selectedAgent: MinimalPersonaSnapshot;
+  agentTools?: ToolSnapshot[];
   filterManager: FilterManager;
   availableSources?: ValidSources[];
   disabled?: boolean;
@@ -165,6 +167,7 @@ export interface ActionsPopoverProps {
 
 export default function ActionsPopover({
   selectedAgent,
+  agentTools,
   filterManager,
   availableSources = [],
   disabled = false,
@@ -182,6 +185,11 @@ export default function ActionsPopover({
     selectedAgent.id
   );
   const hasAnyProvider = !isLLMLoading && (llmProviders?.length ?? 0) > 0;
+  const { tools: availableTools } = useAvailableTools();
+  const effectiveAgentTools = useMemo(
+    () => agentTools || getEffectiveAgentTools(selectedAgent, availableTools),
+    [agentTools, selectedAgent, availableTools]
+  );
 
   // Use the OAuth hook
   const { getToolAuthStatus, authenticateTool } = useToolOAuthStatus(
@@ -207,7 +215,7 @@ export default function ActionsPopover({
   const isDefaultAgent = selectedAgent.id === 0;
 
   // Check if the search tool is explicitly enabled on this persona (admin enabled "Use Knowledge")
-  const hasSearchTool = selectedAgent.tools.some(
+  const hasSearchTool = effectiveAgentTools.some(
     (tool) => tool.in_code_tool_id === SEARCH_TOOL_ID
   );
 
@@ -305,7 +313,6 @@ export default function ActionsPopover({
   const { isAdmin, isCurator } = useUser();
   const vectorDbEnabled = useVectorDbEnabled();
 
-  const { tools: availableTools } = useAvailableTools();
   const { ccPairs } = useCCPairs(vectorDbEnabled);
   const { currentProjectId, allCurrentProjectFiles } = useProjectsContext();
   const availableToolIdSet = new Set(availableTools.map((tool) => tool.id));
@@ -342,10 +349,10 @@ export default function ActionsPopover({
   // Get internal search tool reference for auto-pin logic
   const internalSearchTool = useMemo(
     () =>
-      selectedAgent.tools.find(
+      effectiveAgentTools.find(
         (tool) => tool.in_code_tool_id === SEARCH_TOOL_ID && !tool.mcp_server_id
       ),
-    [selectedAgent.tools]
+    [effectiveAgentTools]
   );
 
   // Handle explicit force toggle from ActionLineItem
@@ -452,7 +459,7 @@ export default function ActionsPopover({
   // Filter out MCP tools from the main list (they have mcp_server_id)
   // Also filter out internal search tool for basic users when there are no connectors
   // Also filter out tools that are not chat-selectable (e.g., OpenURL)
-  const displayTools = selectedAgent.tools.filter((tool) => {
+  const displayTools = effectiveAgentTools.filter((tool) => {
     // Filter out MCP tools
     if (tool.mcp_server_id) return false;
 
@@ -706,7 +713,7 @@ export default function ActionsPopover({
     : undefined;
   const selectedMcpTools =
     selectedMcpServerId !== null
-      ? selectedAgent.tools.filter(
+      ? effectiveAgentTools.filter(
           (t) => t.mcp_server_id === Number(selectedMcpServerId)
         )
       : [];
@@ -959,8 +966,8 @@ export default function ActionsPopover({
             isLoading: false,
           };
 
-          // Tools for this server come from assistant.tools
-          const serverTools = selectedAgent.tools.filter(
+          // Tools for this server come from assistant tools
+          const serverTools = effectiveAgentTools.filter(
             (t) => t.mcp_server_id === Number(server.id)
           );
           const enabledTools = serverTools.filter(

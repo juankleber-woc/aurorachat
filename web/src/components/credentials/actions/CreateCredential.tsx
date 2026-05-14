@@ -137,6 +137,7 @@ export default function CreateCredential({
         name: name,
         source: sourceType,
         private_key: privateKey || undefined,
+        scope,
       });
 
       const { message, isSuccess, credential } = response;

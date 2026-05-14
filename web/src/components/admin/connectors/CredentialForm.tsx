@@ -2,7 +2,7 @@ import React, { JSX } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { toast } from "@/hooks/useToast";
-import { ValidSources } from "@/lib/types";
+import { ConnectorScope, ValidSources } from "@/lib/types";
 
 import {
   createCredential,
@@ -17,7 +17,9 @@ import {
 const PRIVATE_KEY_FIELD_KEY = "private_key";
 
 export async function submitCredential<T>(
-  credential: CredentialBase<T> | CredentialWithPrivateKey<T>
+  credential:
+    | (CredentialBase<T> & { scope?: ConnectorScope })
+    | (CredentialWithPrivateKey<T> & { scope?: ConnectorScope })
 ): Promise<{
   credential?: Credential<any>;
   message: string;

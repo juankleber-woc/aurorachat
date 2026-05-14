@@ -2179,6 +2179,39 @@ def create_user_connector_definition(
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@router.delete("/user/connector-definition/{connector_id}", tags=PUBLIC_API_TAGS)
+def delete_user_connector_definition(
+    connector_id: int,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> StatusResponse:
+    """Delete an unlinked personal connector definition created during setup."""
+    if user is None:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    connector = fetch_connector_by_id(connector_id, db_session)
+    if connector is None:
+        return StatusResponse(
+            success=True,
+            message="Personal connector definition was already deleted",
+        )
+
+    linked_cc_pairs = list(connector.credentials or [])
+    if linked_cc_pairs:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete a linked connector definition from this endpoint",
+        )
+
+    delete_connector(db_session=db_session, connector_id=connector_id)
+    db_session.commit()
+
+    return StatusResponse(
+        success=True,
+        message="Personal connector definition deleted successfully",
+    )
+
+
 class UserConnectorResponse(BaseModel):
     cc_pair_id: int
     connector_id: int

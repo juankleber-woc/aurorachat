@@ -18,7 +18,6 @@ export default function useIsDefaultAgent({
   liveAgent,
   existingChatSessionId,
   selectedChatSession,
-  settings,
 }: {
   liveAgent: MinimalPersonaSnapshot | undefined;
   existingChatSessionId: string | null;
@@ -29,11 +28,6 @@ export default function useIsDefaultAgent({
   const urlAssistantId = searchParams?.get(SEARCH_PARAM_NAMES.PERSONA_ID);
 
   return useMemo(() => {
-    // If default agent is disabled, it can never be the default agent
-    if (settings?.settings?.disable_default_assistant) {
-      return false;
-    }
-
     // If URL has an agentId, it's explicitly selected, not default
     if (
       urlAssistantId !== null &&
@@ -53,7 +47,6 @@ export default function useIsDefaultAgent({
     // If just on `/chat` page, it's the default agent
     return true;
   }, [
-    settings?.settings?.disable_default_assistant,
     urlAssistantId,
     existingChatSessionId,
     selectedChatSession?.persona_id,

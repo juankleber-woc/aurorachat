@@ -161,13 +161,13 @@ export default function AddConnector({
 
   // Fetch credentials data
   const { data: credentials } = useSWR<Credential<any>[]>(
-    buildSimilarCredentialInfoURL(connector),
+    buildSimilarCredentialInfoURL(connector, false, scope),
     errorHandlingFetcher,
     { refreshInterval: 5000 }
   );
 
   const { data: editableCredentials } = useSWR<Credential<any>[]>(
-    buildSimilarCredentialInfoURL(connector, true),
+    buildSimilarCredentialInfoURL(connector, true, scope),
     errorHandlingFetcher,
     { refreshInterval: 5000 }
   );
@@ -233,7 +233,8 @@ export default function AddConnector({
 
   // Credential handler functions
   const refresh = () => {
-    mutate(buildSimilarCredentialInfoURL(connector));
+    mutate(buildSimilarCredentialInfoURL(connector, false, scope));
+    mutate(buildSimilarCredentialInfoURL(connector, true, scope));
   };
 
   const onDeleteCredential = async (credential: Credential<any | null>) => {
@@ -497,7 +498,7 @@ export default function AddConnector({
             );
 
             if (connectorIdRef.current) {
-              await deleteConnector(connectorIdRef.current);
+              await deleteConnector(connectorIdRef.current, scope);
               connectorIdRef.current = null;
             }
           }

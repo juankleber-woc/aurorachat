@@ -192,6 +192,20 @@ function MCPServerCard({
   );
 }
 
+function UnavailableToolAction({
+  href,
+  label = "Configure",
+}: {
+  href: string;
+  label?: string;
+}) {
+  return (
+    <Button href={href} prominence="tertiary" size="sm" rightIcon={SvgExternalLink}>
+      {label}
+    </Button>
+  );
+}
+
 type FileLimitFieldName =
   | "user_file_max_upload_size_mb"
   | "file_token_count_threshold_k";
@@ -643,9 +657,8 @@ function ChatPreferencesForm() {
 
           <Separator noPadding />
 
-          <Disabled disabled={values.disable_default_assistant}>
-            <div>
-              <Section gap={1.5}>
+          <div>
+            <Section gap={1.5}>
                 {/* Connectors */}
                 <Section gap={0.75}>
                   <Content
@@ -701,13 +714,13 @@ function ChatPreferencesForm() {
                 </Section>
 
                 {/* Actions & Tools */}
-                <SimpleCollapsible>
-                  <SimpleCollapsible.Header
-                    title="Actions & Tools"
-                    description="Tools and capabilities available for chat to use. This does not apply to agents."
-                  />
-                  <SimpleCollapsible.Content>
-                    <Section gap={0.5}>
+              <SimpleCollapsible>
+                <SimpleCollapsible.Header
+                  title="Actions & Tools"
+                  description="Tools and capabilities available for chat to use. This does not apply to agents."
+                />
+                <SimpleCollapsible.Content>
+                  <Section gap={0.5}>
                       {vectorDbEnabled && searchTool && (
                         <Card>
                           <InputLayouts.Horizontal
@@ -720,6 +733,18 @@ function ChatPreferencesForm() {
                                 void toggleTool(searchTool.id, checked)
                               }
                             />
+                          </InputLayouts.Horizontal>
+                        </Card>
+                      )}
+
+                      {vectorDbEnabled && !searchTool && (
+                        <Card variant="disabled">
+                          <InputLayouts.Horizontal
+                            title="Internal Search"
+                            description="Search through your organization's connected knowledge base and documents."
+                            disabled
+                          >
+                            <UnavailableToolAction href="/admin/configuration/search" />
                           </InputLayouts.Horizontal>
                         </Card>
                       )}
@@ -738,40 +763,36 @@ function ChatPreferencesForm() {
                             description="Generate and manipulate images using AI-powered tools."
                             disabled={!imageGenTool}
                           >
-                            <Switch
-                              checked={
-                                imageGenTool
-                                  ? isToolEnabled(imageGenTool.id)
-                                  : false
-                              }
-                              onCheckedChange={(checked) =>
-                                imageGenTool &&
-                                void toggleTool(imageGenTool.id, checked)
-                              }
-                              disabled={!imageGenTool}
-                            />
+                            {imageGenTool ? (
+                              <Switch
+                                checked={isToolEnabled(imageGenTool.id)}
+                                onCheckedChange={(checked) =>
+                                  void toggleTool(imageGenTool.id, checked)
+                                }
+                              />
+                            ) : (
+                              <UnavailableToolAction href="/admin/configuration/image-generation" />
+                            )}
                           </InputLayouts.Horizontal>
                         </Card>
                       </SimpleTooltip>
 
                       <Card variant={webSearchTool ? undefined : "disabled"}>
-                        <InputLayouts.Horizontal
-                          title="Web Search"
-                          description="Search the web for real-time information and up-to-date results."
-                          disabled={!webSearchTool}
-                        >
-                          <Switch
-                            checked={
-                              webSearchTool
-                                ? isToolEnabled(webSearchTool.id)
-                                : false
-                            }
-                            onCheckedChange={(checked) =>
-                              webSearchTool &&
-                              void toggleTool(webSearchTool.id, checked)
-                            }
+                          <InputLayouts.Horizontal
+                            title="Web Search"
+                            description="Search the web for real-time information and up-to-date results."
                             disabled={!webSearchTool}
-                          />
+                          >
+                            {webSearchTool ? (
+                              <Switch
+                                checked={isToolEnabled(webSearchTool.id)}
+                                onCheckedChange={(checked) =>
+                                  void toggleTool(webSearchTool.id, checked)
+                                }
+                              />
+                            ) : (
+                              <UnavailableToolAction href="/admin/configuration/web-search" />
+                            )}
                         </InputLayouts.Horizontal>
                       </Card>
 
@@ -804,18 +825,16 @@ function ChatPreferencesForm() {
                           description="Generate and run code."
                           disabled={!codeInterpreterTool}
                         >
-                          <Switch
-                            checked={
-                              codeInterpreterTool
-                                ? isToolEnabled(codeInterpreterTool.id)
-                                : false
-                            }
-                            onCheckedChange={(checked) =>
-                              codeInterpreterTool &&
-                              void toggleTool(codeInterpreterTool.id, checked)
-                            }
-                            disabled={!codeInterpreterTool}
-                          />
+                          {codeInterpreterTool ? (
+                            <Switch
+                              checked={isToolEnabled(codeInterpreterTool.id)}
+                              onCheckedChange={(checked) =>
+                                void toggleTool(codeInterpreterTool.id, checked)
+                              }
+                            />
+                          ) : (
+                            <UnavailableToolAction href="/admin/configuration/code-interpreter" />
+                          )}
                         </InputLayouts.Horizontal>
                       </Card>
                     </Section>
@@ -855,12 +874,11 @@ function ChatPreferencesForm() {
                           />
                         </ExpandableCard.Root>
                       ))}
-                    </Section>
-                  </SimpleCollapsible.Content>
-                </SimpleCollapsible>
-              </Section>
-            </div>
-          </Disabled>
+                  </Section>
+                </SimpleCollapsible.Content>
+              </SimpleCollapsible>
+            </Section>
+          </div>
 
           <Separator noPadding />
 

@@ -86,12 +86,23 @@ import { useLocale } from "@/providers/LocaleProvider";
 // OR Visible-agents = pinned-agents (if current-agent in pinned-agents)
 function buildVisibleAgents(
   pinnedAgents: MinimalPersonaSnapshot[],
-  currentAgent: MinimalPersonaSnapshot | null
+  currentAgent: MinimalPersonaSnapshot | null,
+  availableAgents: MinimalPersonaSnapshot[]
 ): [MinimalPersonaSnapshot[], boolean] {
-  /* NOTE: The unified agent (id = 0) is not visible in the sidebar,
-  so we filter it out. */
-  if (!currentAgent)
-    return [pinnedAgents.filter((agent) => agent.id !== 0), false];
+  /* NOTE: The unified agent (id = 0) is not visible in the sidebar. */
+  const nonDefaultAvailableAgents = availableAgents.filter(
+    (agent) => agent.id !== 0
+  );
+
+  if (!currentAgent) {
+    const visiblePinnedAgents = pinnedAgents.filter((agent) => agent.id !== 0);
+    return [
+      visiblePinnedAgents.length > 0
+        ? visiblePinnedAgents
+        : nonDefaultAvailableAgents,
+      false,
+    ];
+  }
   const currentAgentIsPinned = pinnedAgents.some(
     (pinnedAgent) => pinnedAgent.id === currentAgent.id
   );
@@ -99,7 +110,10 @@ function buildVisibleAgents(
     currentAgentIsPinned ? pinnedAgents : [...pinnedAgents, currentAgent]
   ).filter((agent) => agent.id !== 0);
 
-  return [visibleAgents, currentAgentIsPinned];
+  return [
+    visibleAgents.length > 0 ? visibleAgents : nonDefaultAvailableAgents,
+    currentAgentIsPinned,
+  ];
 }
 
 const SKELETON_WIDTHS_BASE = ["w-4/5", "w-4/5", "w-3/5"];
@@ -226,7 +240,7 @@ const MemoizedAppSidebarInner = memo(
       refreshProjects,
       isLoading: isLoadingProjects,
     } = useProjects();
-    const { isLoading: isLoadingAgents } = useAgents();
+    const { agents: availableAgents, isLoading: isLoadingAgents } = useAgents();
     const currentAgent = useCurrentAgent();
     const {
       pinnedAgents,
@@ -318,8 +332,8 @@ const MemoizedAppSidebarInner = memo(
     }, [buildModeNotification, mutateNotifications]);
 
     const [visibleAgents, currentAgentIsPinned] = useMemo(
-      () => buildVisibleAgents(pinnedAgents, currentAgent),
-      [pinnedAgents, currentAgent]
+      () => buildVisibleAgents(pinnedAgents, currentAgent, availableAgents),
+      [pinnedAgents, currentAgent, availableAgents]
     );
     const visibleAgentIds = useMemo(
       () => visibleAgents.map((agent) => agent.id),
@@ -496,16 +510,12 @@ const MemoizedAppSidebarInner = memo(
         | "chat"
         | "search") ?? "chat";
     const newSessionButton = useMemo(() => {
-      const href =
-        combinedSettings?.settings?.disable_default_assistant && currentAgent
-          ? `/app?agentId=${currentAgent.id}`
-          : "/app";
       return (
         <div data-testid="AppSidebar/new-session">
           <SidebarTab
             icon={SvgEditBig}
             folded={folded}
-            href={href}
+            href="/app"
             selected={activeSidebarTab.isNewSession()}
             onClick={() => {
               if (!activeSidebarTab.isNewSession()) return;
@@ -520,8 +530,6 @@ const MemoizedAppSidebarInner = memo(
     }, [
       folded,
       activeSidebarTab,
-      combinedSettings,
-      currentAgent,
       defaultAppMode,
     ]);
 

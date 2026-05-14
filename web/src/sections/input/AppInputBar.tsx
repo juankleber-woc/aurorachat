@@ -36,10 +36,12 @@ import {
 } from "@/app/app/projects/projectsService";
 import FilePickerPopover from "@/refresh-components/popovers/FilePickerPopover";
 import ActionsPopover from "@/refresh-components/popovers/ActionsPopover";
+import { useAvailableTools } from "@/hooks/useAvailableTools";
 import {
   getIconForAction,
   hasSearchToolsAvailable,
 } from "@/app/app/services/actionUtils";
+import { getEffectiveAgentTools } from "@/lib/tools/getEffectiveAgentTools";
 import {
   SvgArrowUp,
   SvgGlobe,
@@ -320,12 +322,19 @@ const AppInputBar = React.memo(
     const { ccPairs, isLoading: ccPairsLoading } = useCCPairs(vectorDbEnabled);
     const { data: federatedConnectorsData, isLoading: federatedLoading } =
       useFederatedConnectors();
+    const { tools: availableTools, isLoading: availableToolsLoading } =
+      useAvailableTools();
+    const effectiveAgentTools = useMemo(
+      () => getEffectiveAgentTools(selectedAgent, availableTools),
+      [selectedAgent, availableTools]
+    );
 
     // Bottom controls are hidden until all data is loaded
     const controlsLoading =
       ccPairsLoading ||
       federatedLoading ||
       !selectedAgent ||
+      availableToolsLoading ||
       llmManager.isLoadingProviders;
     const [showPrompts, setShowPrompts] = useState(false);
 
@@ -431,10 +440,10 @@ const AppInputBar = React.memo(
       return (
         !isProjectWorkflow &&
         deepResearchGloballyEnabled &&
-        hasSearchToolsAvailable(selectedAgent?.tools || [])
+        hasSearchToolsAvailable(effectiveAgentTools)
       );
     }, [
-      selectedAgent?.tools,
+      effectiveAgentTools,
       combinedSettings?.settings?.deep_research_enabled,
       currentProjectId,
     ]);
@@ -530,9 +539,10 @@ const AppInputBar = React.memo(
               controlsLoading && "invisible"
             )}
           >
-            {selectedAgent && selectedAgent.tools.length > 0 && (
+            {selectedAgent && effectiveAgentTools.length > 0 && (
               <ActionsPopover
                 selectedAgent={selectedAgent}
+                agentTools={effectiveAgentTools}
                 filterManager={filterManager}
                 availableSources={memoizedAvailableSources}
                 disabled={disabled}
@@ -575,7 +585,7 @@ const AppInputBar = React.memo(
             {selectedAgent &&
               forcedToolIds.length > 0 &&
               forcedToolIds.map((toolId) => {
-                const tool = selectedAgent.tools.find(
+                const tool = effectiveAgentTools.find(
                   (tool) => tool.id === toolId
                 );
                 if (!tool) {

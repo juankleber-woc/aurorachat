@@ -13,8 +13,6 @@ import {
   formatDisplayTime,
   highlightMatch,
 } from "@/sections/sidebar/chatSearchUtils";
-import { useSettingsContext } from "@/providers/SettingsProvider";
-import { useCurrentAgent } from "@/hooks/useAgents";
 import Text from "@/refresh-components/texts/Text";
 import {
   useChatSearchOptimistic,
@@ -77,8 +75,6 @@ export default function ChatSearchCommandMenu({
 
   // Data hooks
   const { projects } = useProjects();
-  const combinedSettings = useSettingsContext();
-  const currentAgent = useCurrentAgent();
   const createProjectModal = useCreateModal();
 
   // Constants for preview limits
@@ -154,13 +150,9 @@ export default function ChatSearchCommandMenu({
 
   // Navigation handlers
   const handleNewSession = useCallback(() => {
-    const href =
-      combinedSettings?.settings?.disable_default_assistant && currentAgent
-        ? `/app?agentId=${currentAgent.id}`
-        : "/app";
-    router.push(href as Route);
+    router.push("/app" as Route);
     setOpen(false);
-  }, [router, combinedSettings, currentAgent]);
+  }, [router]);
 
   const handleChatSelect = useCallback(
     (chatId: string) => {

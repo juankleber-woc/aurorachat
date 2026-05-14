@@ -14,18 +14,26 @@ import {
 } from "./constants";
 
 export async function createCredential(credential: CredentialBase<any>) {
-  return await fetch(`/api/manage/credential`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credential),
-  });
+  const scope = (credential as CredentialBase<any> & { scope?: ConnectorScope })
+    .scope;
+  return await fetch(
+    scope === "user" ? `/api/manage/user/credential` : `/api/manage/credential`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credential),
+    }
+  );
 }
 
 export async function createCredentialWithPrivateKey(
   credential: CredentialWithPrivateKey<any>
 ) {
+  const scope = (
+    credential as CredentialWithPrivateKey<any> & { scope?: ConnectorScope }
+  ).scope;
   const formData = new FormData();
   formData.append(CREDENTIAL_JSON, JSON.stringify(credential.credential_json));
   formData.append("admin_public", credential.admin_public.toString());
@@ -48,10 +56,15 @@ export async function createCredentialWithPrivateKey(
       credential.private_key.typeDefinition.category
     );
   }
-  return await fetch(`/api/manage/credential/private-key`, {
-    method: "POST",
-    body: formData,
-  });
+  return await fetch(
+    scope === "user"
+      ? `/api/manage/user/credential/private-key`
+      : `/api/manage/credential/private-key`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
 }
 
 export async function adminDeleteCredential<T>(credentialId: number) {

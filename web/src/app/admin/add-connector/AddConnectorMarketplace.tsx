@@ -146,7 +146,7 @@ export function AddConnectorMarketplace({
   const settings = useContext(SettingsContext);
 
   const { data: slackCredentials } = useSWR<Credential<any>[]>(
-    buildSimilarCredentialInfoURL(ValidSources.Slack),
+    buildSimilarCredentialInfoURL(ValidSources.Slack, false, scope),
     errorHandlingFetcher
   );
 

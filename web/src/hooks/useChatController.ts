@@ -74,6 +74,8 @@ import { useForcedTools } from "@/lib/hooks/useForcedTools";
 import { ProjectFile, useProjectsContext } from "@/providers/ProjectsContext";
 import { useAppParams } from "@/hooks/appNavigation";
 import { projectFilesToFileDescriptors } from "@/app/app/services/fileUtils";
+import { useAvailableTools } from "@/hooks/useAvailableTools";
+import { getEffectiveAgentTools } from "@/lib/tools/getEffectiveAgentTools";
 
 const SYSTEM_MESSAGE_ID = -3;
 
@@ -145,8 +147,13 @@ export default function useChatController({
   const { pinnedAgents, togglePinnedAgent } = usePinnedAgents();
   const { agentPreferences } = useAgentPreferences();
   const { forcedToolIds } = useForcedTools();
+  const { tools: availableTools } = useAvailableTools();
   const { fetchProjects, setCurrentMessageFiles, beginUpload } =
     useProjectsContext();
+  const effectiveLiveAgentTools = useMemo(
+    () => getEffectiveAgentTools(liveAgent, availableTools),
+    [liveAgent, availableTools]
+  );
 
   // Use selectors to access only the specific fields we need
   const currentSessionId = useChatSessionStore(
@@ -671,7 +678,7 @@ export default function useChatController({
           : undefined;
 
         // Find the search tool's numeric ID for forceSearch
-        const searchToolNumericId = liveAgent?.tools.find(
+        const searchToolNumericId = effectiveLiveAgentTools.find(
           (tool) => tool.in_code_tool_id === SEARCH_TOOL_ID
         )?.id;
 
@@ -721,7 +728,7 @@ export default function useChatController({
           deepResearch,
           enabledToolIds:
             disabledToolIds && liveAgent
-              ? liveAgent.tools
+              ? effectiveLiveAgentTools
                   .filter((tool) => !disabledToolIds?.includes(tool.id))
                   .map((tool) => tool.id)
               : undefined,
@@ -960,6 +967,7 @@ export default function useChatController({
       llmManager.temperature,
       // Others that affect logic
       liveAgent,
+      effectiveLiveAgentTools,
       availableAgents,
       existingChatSessionId,
       selectedDocuments,
