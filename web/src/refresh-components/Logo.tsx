@@ -75,16 +75,7 @@ export default function Logo({ folded, size, className }: LogoProps) {
           /* H3 text is 4px larger (28px) than the Logo icon (24px), so negative margin hack. */
           <div className="flex flex-1 flex-col -mt-0.5">
             {opts.includeName && <Truncated headingH3>{applicationName}</Truncated>}
-            {!NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED && (
-              <Text
-                secondaryBody
-                text03
-                className={"line-clamp-1 truncate"}
-                nowrap
-              >
-                Powered by InovaChat
-              </Text>
-            )}
+
           </div>
         )}
       </div>
