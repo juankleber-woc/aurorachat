@@ -13,7 +13,7 @@ export default function SidePanelHeader({
   onNewChat,
   chatSessionId,
 }: SidePanelHeaderProps) {
-  const handleOpenInAuroraChat = () => {
+  const handleOpenInInovaChat = () => {
     const path = chatSessionId ? `/app?chatId=${chatSessionId}` : "/app";
     window.open(`${window.location.origin}${path}`, "_blank");
   };
@@ -31,8 +31,8 @@ export default function SidePanelHeader({
         <Button
           prominence="tertiary"
           icon={SvgExternalLink}
-          onClick={handleOpenInAuroraChat}
-          tooltip="Open in AuroraChat"
+          onClick={handleOpenInInovaChat}
+          tooltip="Open in InovaChat"
         />
       </div>
     </header>

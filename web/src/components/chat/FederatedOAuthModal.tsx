@@ -118,7 +118,7 @@ export default function FederatedOAuthModal() {
   }
 
   const applicationName =
-    settings?.enterpriseSettings?.application_name || "AuroraChat";
+    settings?.enterpriseSettings?.application_name || "InovaChat";
 
   return (
     <Modal open>

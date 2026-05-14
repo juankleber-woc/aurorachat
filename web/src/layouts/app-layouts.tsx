@@ -465,9 +465,9 @@ function Footer() {
 
   const customFooterContent =
     settings?.enterpriseSettings?.custom_lower_disclaimer_content ||
-    `[AuroraChat ${
+    `[InovaChat ${
       settings?.webVersion || "dev"
-    }](https://www.aurorachat.app/) - ${APP_SLOGAN}`;
+    }](https://inovachat.app/) - ${APP_SLOGAN}`;
 
   return (
     <footer

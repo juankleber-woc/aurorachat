@@ -35,7 +35,7 @@ const PT_BR_MESSAGES: LocaleMessages = {
   admin_panel: "Painel admin",
   curator_panel: "Painel do curador",
   craft: "Studio",
-  build_intro_title: "AuroraChat Studio",
+  build_intro_title: "InovaChat Studio",
   build_intro_description:
     "Crie dashboards, apresentações, documentos e muito mais com seus dados conectados.",
   return_home: "Voltar para o início",
@@ -44,7 +44,7 @@ const PT_BR_MESSAGES: LocaleMessages = {
   auth_error_description: "Houve um problema na sua tentativa de login.",
   auth_return_to_login: "Voltar para a página de login",
   auth_support:
-    "Se o problema continuar, entre em contato com a equipe AuroraChat em support@aurorachat.app.",
+    "Se o problema continuar, entre em contato com a equipe InovaChat em support@inovachat.app.",
   user_settings: "Configurações do usuário",
   notifications: "Notificações",
   help_faq: "Ajuda e FAQ",
@@ -65,11 +65,11 @@ const PT_BR_MESSAGES: LocaleMessages = {
     "Português do Brasil é o padrão, mas você pode trocar para inglês quando quiser.",
   language_portuguese: "Português (Brasil)",
   language_english: "English",
-  release_available: "AuroraChat {version} está disponível!",
+  release_available: "InovaChat {version} está disponível!",
   release_description: "Veja as novidades da versão {version}",
   feature_available: "Novo recurso disponível",
   feature_description:
-    "Confira as novidades que acabaram de chegar no AuroraChat.",
+    "Confira as novidades que acabaram de chegar no InovaChat.",
 };
 
 const EN_US_MESSAGES: LocaleMessages = {
@@ -89,7 +89,7 @@ const EN_US_MESSAGES: LocaleMessages = {
   admin_panel: "Admin Panel",
   curator_panel: "Curator Panel",
   craft: "Studio",
-  build_intro_title: "AuroraChat Studio",
+  build_intro_title: "InovaChat Studio",
   build_intro_description:
     "Create dashboards, slide decks, documents, and more with your connected data.",
   return_home: "Return Home",
@@ -98,7 +98,7 @@ const EN_US_MESSAGES: LocaleMessages = {
   auth_error_description: "There was a problem with your login attempt.",
   auth_return_to_login: "Return to Login Page",
   auth_support:
-    "If you continue to experience problems, please reach out to the AuroraChat team at support@aurorachat.app.",
+    "If you continue to experience problems, please reach out to the InovaChat team at support@inovachat.app.",
   user_settings: "User Settings",
   notifications: "Notifications",
   help_faq: "Help & FAQ",
@@ -119,10 +119,10 @@ const EN_US_MESSAGES: LocaleMessages = {
     "Portuguese (Brazil) is the default, but you can switch back to English anytime.",
   language_portuguese: "Português (Brasil)",
   language_english: "English",
-  release_available: "AuroraChat {version} is available!",
+  release_available: "InovaChat {version} is available!",
   release_description: "Check out what's new in {version}",
   feature_available: "New feature available",
-  feature_description: "Check out the latest AuroraChat improvements.",
+  feature_description: "Check out the latest InovaChat improvements.",
 };
 
 const MESSAGES: Record<SupportedUILocale, LocaleMessages> = {

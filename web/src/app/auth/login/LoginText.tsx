@@ -12,7 +12,7 @@ export default function LoginText() {
     <div className="w-full flex flex-col ">
       <Text as="p" headingH2 text05>
         {locale === "pt-BR" ? "Bem-vindo ao " : "Welcome to "}
-        {(settings && settings?.enterpriseSettings?.application_name) || "AuroraChat"}
+        {(settings && settings?.enterpriseSettings?.application_name) || "InovaChat"}
       </Text>
       <Text as="p" text03 mainUiMuted>
         {locale === "pt-BR"

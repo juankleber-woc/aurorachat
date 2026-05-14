@@ -1,8 +1,8 @@
 "use client";
 
 export const DEFAULT_UI_LOCALE = "pt-BR" as const;
-export const UI_LOCALE_STORAGE_KEY = "aurorachat.ui-locale";
-export const UI_LOCALE_COOKIE_KEY = "aurorachat_ui_locale";
+export const UI_LOCALE_STORAGE_KEY = "inovachat.ui-locale";
+export const UI_LOCALE_COOKIE_KEY = "inovachat_ui_locale";
 
 export const SUPPORTED_UI_LOCALES = ["pt-BR", "en-US"] as const;
 

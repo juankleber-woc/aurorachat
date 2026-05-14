@@ -23,7 +23,7 @@ export default function Logo({ folded, size, className }: LogoProps) {
   const settings = useSettingsContext();
   const logoDisplayStyle = settings.enterpriseSettings?.logo_display_style;
   const applicationName =
-    settings.enterpriseSettings?.application_name || "AuroraChat";
+    settings.enterpriseSettings?.application_name || "InovaChat";
 
   // Cache-buster: the logo URL never changes (/api/enterprise-settings/logo)
   // so the browser serves the in-memory cached image even after an admin
@@ -53,7 +53,7 @@ export default function Logo({ folded, size, className }: LogoProps) {
         />
       ) : (
         <Image
-          alt="AuroraChat logo"
+          alt="InovaChat logo"
           src={auroraLogo}
           fill
           sizes={`${resolvedSize}px`}
@@ -82,7 +82,7 @@ export default function Logo({ folded, size, className }: LogoProps) {
                 className={"line-clamp-1 truncate"}
                 nowrap
               >
-                Powered by AuroraChat
+                Powered by InovaChat
               </Text>
             )}
           </div>

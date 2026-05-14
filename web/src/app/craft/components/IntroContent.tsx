@@ -38,7 +38,7 @@ export default function BuildModeIntroContent({
               <div className="relative h-[220px] w-[220px] rounded-full ring-1 ring-white/20 overflow-hidden shadow-02">
                 <Image
                   src={auroraLogo}
-                  alt="AuroraChat logo"
+                  alt="InovaChat logo"
                   fill
                   sizes="220px"
                   className="object-cover"

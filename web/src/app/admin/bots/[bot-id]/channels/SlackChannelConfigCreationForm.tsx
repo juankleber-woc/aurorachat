@@ -221,7 +221,7 @@ export const SlackChannelConfigCreationForm = ({
             toast.error(
               `Error ${
                 isUpdate ? "updating" : "creating"
-              } AuroraBot config - ${errorMsg}`
+              } InovaBot config - ${errorMsg}`
             );
           }
         }}

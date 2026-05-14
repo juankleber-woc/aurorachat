@@ -56,12 +56,12 @@ export default function NoLlmProvidersModal({
                 LLM Provider Required
               </Text>
               <Text mainUiBody text03 className="max-w-sm">
-                AuroraChat Craft requires an LLM provider to be configured, but only
+                InovaChat Craft requires an LLM provider to be configured, but only
                 admins can set this up.
                 <br />
                 <br />
                 Please ask your admin to configure an LLM provider, or create a
-                new AuroraChat account to become an admin yourself!
+                new InovaChat account to become an admin yourself!
               </Text>
             </div>
           </div>

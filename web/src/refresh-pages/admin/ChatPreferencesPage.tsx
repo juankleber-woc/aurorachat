@@ -561,7 +561,7 @@ function ChatPreferencesForm() {
             >
               <InputTextAreaField
                 name="company_description"
-                placeholder="Describe your team and how AuroraChat should behave."
+                placeholder="Describe your team and how InovaChat should behave."
                 rows={4}
                 maxRows={10}
                 autoResize
@@ -890,7 +890,7 @@ function ChatPreferencesForm() {
                 <Card>
                   <InputLayouts.Horizontal
                     title="Keep Chat History"
-                    description="Specify how long AuroraChat should retain chats in your organization."
+                    description="Specify how long InovaChat should retain chats in your organization."
                   >
                     <InputSelectField
                       name="maximum_chat_retention_days"

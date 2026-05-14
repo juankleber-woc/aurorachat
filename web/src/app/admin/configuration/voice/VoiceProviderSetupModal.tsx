@@ -438,7 +438,7 @@ export default function VoiceProviderSetupModal({
               <Vertical
                 title="Target URI"
                 subDescription={markdown(
-                  "Paste the endpoint shown in [Azure Portal (Keys and Endpoint)](https://portal.azure.com/). AuroraChat extracts the speech region from this URL. Examples: https://westus.api.cognitive.microsoft.com/ or https://westus.tts.speech.microsoft.com/."
+                  "Paste the endpoint shown in [Azure Portal (Keys and Endpoint)](https://portal.azure.com/). InovaChat extracts the speech region from this URL. Examples: https://westus.api.cognitive.microsoft.com/ or https://westus.tts.speech.microsoft.com/."
                 )}
                 nonInteractive
               >
@@ -472,7 +472,7 @@ export default function VoiceProviderSetupModal({
             {providerType === "openai" && mode === "tts" && (
               <Vertical
                 title="Default Model"
-                subDescription="This model will be used by AuroraChat by default for text-to-speech."
+                subDescription="This model will be used by InovaChat by default for text-to-speech."
                 nonInteractive
               >
                 <InputSelect value={ttsModel} onValueChange={setTtsModel}>

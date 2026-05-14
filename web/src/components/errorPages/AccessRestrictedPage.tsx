@@ -63,9 +63,9 @@ export default function AccessRestricted() {
     ? getSeatLimitMessage()
     : showRenewalMessage
       ? NEXT_PUBLIC_CLOUD_ENABLED
-        ? "Your access to AuroraChat has been temporarily suspended due to a lapse in your subscription."
-        : "Your access to AuroraChat has been temporarily suspended due to a lapse in your license."
-      : "An Enterprise license is required to use AuroraChat. Your data is protected and will be available once a license is activated.";
+        ? "Your access to InovaChat has been temporarily suspended due to a lapse in your subscription."
+        : "Your access to InovaChat has been temporarily suspended due to a lapse in your license."
+      : "An Enterprise license is required to use InovaChat. Your data is protected and will be available once a license is activated.";
 
   const handleResubscribe = async () => {
     setIsLoading(true);
@@ -104,7 +104,7 @@ export default function AccessRestricted() {
             <Link className={linkClassName} href="/admin/users">
               User Management
             </Link>{" "}
-            page or contact your AuroraChat representative to expand your
+            page or contact your InovaChat representative to expand your
             license.
           </Text>
 
@@ -122,7 +122,7 @@ export default function AccessRestricted() {
       ) : NEXT_PUBLIC_CLOUD_ENABLED ? (
         <>
           <Text text03>
-            To reinstate your access and continue benefiting from AuroraChat&apos;s
+            To reinstate your access and continue benefiting from InovaChat&apos;s
             powerful features, please update your payment information.
           </Text>
 
@@ -153,14 +153,14 @@ export default function AccessRestricted() {
         <>
           <Text text03>
             {hadPreviousLicense
-              ? "To reinstate your access and continue using AuroraChat, please contact your system administrator to renew your license."
+              ? "To reinstate your access and continue using InovaChat, please contact your system administrator to renew your license."
               : "To get started, please contact your system administrator to obtain an Enterprise license."}
           </Text>
 
           <Text text03>
-            If you are the administrator, reach out to the AuroraChat team at{" "}
-            <a className={linkClassName} href="mailto:support@aurorachat.app">
-              support@aurorachat.app
+            If you are the administrator, reach out to the InovaChat team at{" "}
+            <a className={linkClassName} href="mailto:support@inovachat.app">
+              support@inovachat.app
             </a>{" "}
             for help with {hadPreviousLicense ? "license renewal" : "license activation"}.
           </Text>

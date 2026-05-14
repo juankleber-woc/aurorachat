@@ -63,7 +63,7 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AuroraChat",
+  title: "InovaChat",
   description: "Question answering for your documents",
 };
 

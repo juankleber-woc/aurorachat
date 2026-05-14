@@ -47,7 +47,7 @@ export default function OpenEmbeddingPage({
       </Text>
       <Text as="p">
         {markdown(
-          "**NOTE:** not all models listed will work with AuroraChat, since some have unique interfaces or special requirements. If in doubt, reach out to the AuroraChat team."
+          "**NOTE:** not all models listed will work with InovaChat, since some have unique interfaces or special requirements. If in doubt, reach out to the InovaChat team."
         )}
       </Text>
       {!configureModel && (

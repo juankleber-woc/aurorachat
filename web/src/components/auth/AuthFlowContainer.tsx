@@ -16,7 +16,7 @@ export default function AuthFlowContainer({
       <div className="flex w-full max-w-md flex-col items-start rounded-16 bg-background-tint-00 p-5 shadow-lg shadow-02 sm:p-6">
         <Image
           src={auroraLogo}
-          alt="AuroraChat logo"
+          alt="InovaChat logo"
           width={44}
           height={44}
           className="rounded-full ring-1 ring-[var(--border-02)]"
@@ -28,7 +28,7 @@ export default function AuthFlowContainer({
         <div className="mx-auto mt-6 w-full max-w-md px-2 text-center text-sm text-text-03 mainUiBody">
           {footerContent ?? (
             <>
-              New to AuroraChat?{" "}
+              New to InovaChat?{" "}
               <Link
                 href="/auth/signup"
                 className="text-text-05 mainUiAction underline transition-colors duration-200"

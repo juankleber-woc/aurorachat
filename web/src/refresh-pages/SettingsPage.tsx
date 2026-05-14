@@ -875,7 +875,7 @@ function ChatPreferencesSettings() {
         <Card>
           <InputLayouts.Horizontal
             title="Default Model"
-            description="This model will be used by AuroraChat by default in your chats."
+            description="This model will be used by InovaChat by default in your chats."
           >
             <LLMPopover
               llmManager={llmManager}
@@ -960,7 +960,7 @@ function ChatPreferencesSettings() {
         <Card>
           <InputLayouts.Horizontal
             title="Reference Stored Memories"
-            description="Let AuroraChat reference stored memories in chats."
+            description="Let InovaChat reference stored memories in chats."
           >
             <Switch
               checked={personalizationValues.use_memories}
@@ -972,7 +972,7 @@ function ChatPreferencesSettings() {
           </InputLayouts.Horizontal>
           <InputLayouts.Horizontal
             title="Update Memories"
-            description="Let AuroraChat generate and update stored memories."
+            description="Let InovaChat generate and update stored memories."
           >
             <Switch
               checked={personalizationValues.enable_memory_tool}
@@ -1284,7 +1284,7 @@ function AccountsAccessSettings() {
               Any application using the token{" "}
               <Text className="!font-bold">{tokenToDelete.name}</Text>{" "}
               <Text secondaryMono>({tokenToDelete.token_display})</Text> will
-              lose access to AuroraChat. This action cannot be undone.
+              lose access to InovaChat. This action cannot be undone.
             </Text>
             <Text>Are you sure you want to revoke this token?</Text>
           </Section>
@@ -1606,7 +1606,7 @@ function FederatedConnectorCard({
         >
           <Section gap={0.5} alignItems="start">
             <Text>
-              AuroraChat will no longer be able to access or search content from your{" "}
+              InovaChat will no longer be able to access or search content from your{" "}
               <Text className="!font-bold">{sourceMetadata.displayName}</Text>{" "}
               account.
             </Text>

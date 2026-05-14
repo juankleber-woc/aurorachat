@@ -182,7 +182,7 @@ export default function NewTeamModal() {
                   width="full"
                   rightIcon={SvgArrowRight}
                 >
-                  Try AuroraChat while waiting
+                  Try InovaChat while waiting
                 </Button>
               </div>
             </div>

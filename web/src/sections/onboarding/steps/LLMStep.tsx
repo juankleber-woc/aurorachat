@@ -132,7 +132,7 @@ const LLMStepInner = ({
           <ContentAction
             icon={SvgCpu}
             title="Connect your LLM models"
-            description="AuroraChat supports both self-hosted models and popular providers."
+            description="InovaChat supports both self-hosted models and popular providers."
             sizePreset="main-ui"
             variant="section"
             paddingVariant="lg"

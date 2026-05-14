@@ -84,7 +84,7 @@ export function CancelInviteModal({
         <Text as="span" text05>
           {email}
         </Text>{" "}
-        will no longer be able to join AuroraChat with this invite.
+        will no longer be able to join InovaChat with this invite.
       </Text>
     </ConfirmationModalLayout>
   );
@@ -138,7 +138,7 @@ export function DeactivateUserModal({
         <Text as="span" text05>
           {email}
         </Text>{" "}
-        will immediately lose access to AuroraChat. Their sessions and agents will be
+        will immediately lose access to InovaChat. Their sessions and agents will be
         preserved. Their license seat will be freed. You can reactivate this
         account later.
       </Text>
@@ -191,7 +191,7 @@ export function ActivateUserModal({
         <Text as="span" text05>
           {email}
         </Text>{" "}
-        will regain access to AuroraChat.
+        will regain access to InovaChat.
       </Text>
     </ConfirmationModalLayout>
   );
@@ -245,7 +245,7 @@ export function DeleteUserModal({
         <Text as="span" text05>
           {email}
         </Text>{" "}
-        will be permanently removed from AuroraChat. All of their session history will
+        will be permanently removed from InovaChat. All of their session history will
         be deleted. Deletion cannot be undone.
       </Text>
     </ConfirmationModalLayout>

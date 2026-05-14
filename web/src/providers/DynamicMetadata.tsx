@@ -7,7 +7,7 @@ export default function DynamicMetadata() {
   const { enterpriseSettings } = useSettingsContext();
 
   useEffect(() => {
-    const title = enterpriseSettings?.application_name || "AuroraChat";
+    const title = enterpriseSettings?.application_name || "InovaChat";
     if (document.title !== title) {
       document.title = title;
     }

@@ -76,13 +76,13 @@ function AuthErrorContent({ message: rawMessage }: AuthErrorContentProps) {
           {NEXT_PUBLIC_CLOUD_ENABLED ? (
             <>
               {locale === "pt-BR"
-                ? "Se o problema continuar, entre em contato com a equipe AuroraChat em "
-                : "If you continue to experience problems, please reach out to the AuroraChat team at "}
+                ? "Se o problema continuar, entre em contato com a equipe InovaChat em "
+                : "If you continue to experience problems, please reach out to the InovaChat team at "}
               <a
-                href="mailto:support@aurorachat.app"
+                href="mailto:support@inovachat.app"
                 className="text-action-link-05"
               >
-                support@aurorachat.app
+                support@inovachat.app
               </a>
             </>
           ) : (

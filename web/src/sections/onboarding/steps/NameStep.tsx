@@ -48,7 +48,7 @@ const NameStep = React.memo(
       >
         <ContentAction
           icon={SvgUser}
-          title="What should AuroraChat call you?"
+          title="What should InovaChat call you?"
           description="We will display this name in the app."
           sizePreset="main-ui"
           variant="section"

@@ -71,7 +71,7 @@ export default function NRFChrome() {
 
   const customFooterContent =
     settings?.enterpriseSettings?.custom_lower_disclaimer_content ||
-    `[AuroraChat ${settings?.webVersion || "dev"}](https://www.aurorachat.app/) - ${APP_SLOGAN}`;
+    `[InovaChat ${settings?.webVersion || "dev"}](https://inovachat.app/) - ${APP_SLOGAN}`;
 
   const showModeToggle =
     isPaidEnterpriseFeaturesEnabled &&

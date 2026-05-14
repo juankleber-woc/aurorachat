@@ -53,11 +53,11 @@ export default function OnboardingInfoPages({
     return (
       <div className="flex-1 flex flex-col gap-6 items-center justify-center">
         <Text headingH2 text05>
-          What is AuroraChat Craft?
+          What is InovaChat Craft?
         </Text>
         <img
           src="/craft_demo_image_1.png"
-          alt="AuroraChat Craft"
+          alt="InovaChat Craft"
           className="max-w-full h-auto rounded-12"
         />
         <Text mainContentBody text04 className="text-center">
@@ -77,7 +77,7 @@ export default function OnboardingInfoPages({
       </Text>
       <img
         src="/craft_demo_image_2.png"
-        alt="AuroraChat Craft"
+        alt="InovaChat Craft"
         className="max-w-full h-auto rounded-12"
       />
     </div>

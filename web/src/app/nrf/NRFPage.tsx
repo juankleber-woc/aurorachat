@@ -220,7 +220,7 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
     setSettingsOpen((prev) => !prev);
   };
 
-  // If user toggles the "Use AuroraChat" switch to off, prompt a modal
+  // If user toggles the "Use InovaChat" switch to off, prompt a modal
   const handleUseOnyxToggle = (checked: boolean) => {
     if (!checked) {
       setShowTurnOffModal(true);
@@ -554,8 +554,8 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
             <Modal.Content width="sm">
               <Modal.Header
                 icon={SvgAlertTriangle}
-                title="Turn off AuroraChat new tab page?"
-                description="You'll see your browser's default new tab page instead. You can turn it back on anytime in your AuroraChat settings."
+                title="Turn off InovaChat new tab page?"
+                description="You'll see your browser's default new tab page instead. You can turn it back on anytime in your InovaChat settings."
                 onClose={() => setShowTurnOffModal(false)}
               />
               <Modal.Footer>
@@ -577,7 +577,7 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
       {!user && (
         <Modal open onOpenChange={() => {}}>
           <Modal.Content width="sm" height="sm">
-            <Modal.Header icon={SvgUser} title="Welcome to AuroraChat" />
+            <Modal.Header icon={SvgUser} title="Welcome to InovaChat" />
             <Modal.Body>
               {authTypeMetadata.authType === AuthType.BASIC ? (
                 <LoginPage

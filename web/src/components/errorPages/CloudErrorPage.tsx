@@ -9,7 +9,7 @@ export default function CloudError() {
       </Text>
 
       <Text as="p" text03>
-        AuroraChat is currently in a maintenance window. Please check back in a couple
+        InovaChat is currently in a maintenance window. Please check back in a couple
         of minutes.
       </Text>
 

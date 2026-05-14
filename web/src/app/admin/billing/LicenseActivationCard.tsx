@@ -12,7 +12,7 @@ import { uploadLicense } from "@/lib/billing/svc";
 import { LicenseStatus } from "@/lib/billing/interfaces";
 import { formatDateShort } from "@/lib/dateUtils";
 
-const BILLING_HELP_URL = "mailto:support@aurorachat.app";
+const BILLING_HELP_URL = "mailto:support@inovachat.app";
 
 interface LicenseActivationCardProps {
   isOpen: boolean;
@@ -155,7 +155,7 @@ export default function LicenseActivationCard({
           </Button>
         </Section>
         <Text secondaryBody text03>
-          Manually add and activate a license for this AuroraChat instance.
+          Manually add and activate a license for this InovaChat instance.
         </Text>
       </Section>
 
@@ -180,7 +180,7 @@ export default function LicenseActivationCard({
             subDescription={
               error
                 ? undefined
-                : "Paste or attach your license key file you received from AuroraChat."
+                : "Paste or attach your license key file you received from InovaChat."
             }
           >
             <InputFile
@@ -211,7 +211,7 @@ export default function LicenseActivationCard({
                     rel="noopener noreferrer"
                     className="billing-help-link"
                   >
-                    AuroraChat Support
+                    InovaChat Support
                   </a>
                 </Text>
               </Section>

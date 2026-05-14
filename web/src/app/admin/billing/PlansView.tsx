@@ -26,7 +26,7 @@ import { Button as OpalButton } from "@opal/components";
 import Text from "@/refresh-components/texts/Text";
 import { Section } from "@/layouts/general-layouts";
 
-const SALES_URL = "mailto:support@aurorachat.app";
+const SALES_URL = "mailto:support@inovachat.app";
 
 // ----------------------------------------------------------------------------
 // Types
@@ -249,7 +249,7 @@ export default function PlansView({
       pricing: "$20",
       description:
         "per seat/month billed annually\nor $25 per seat if billed monthly",
-      buttonLabel: "Talk to AuroraChat",
+      buttonLabel: "Talk to InovaChat",
       buttonVariant: "primary",
       onClick: hasLicense ? undefined : onCheckout,
       features: BUSINESS_FEATURES,
@@ -261,7 +261,7 @@ export default function PlansView({
       title: "Enterprise",
       description:
         "Flexible pricing & deployment options\nfor large organizations",
-      buttonLabel: "Talk to AuroraChat",
+      buttonLabel: "Talk to InovaChat",
       buttonVariant: "secondary",
       href: SALES_URL,
       features: ENTERPRISE_FEATURES,

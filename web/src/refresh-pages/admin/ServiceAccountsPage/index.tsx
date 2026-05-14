@@ -251,7 +251,7 @@ export default function ServiceAccountsPage() {
         <SettingsLayouts.Header
           title={route.title}
           icon={route.icon}
-          description="Use service accounts to programmatically access AuroraChat API."
+          description="Use service accounts to programmatically access InovaChat API."
           separator
         />
         <SettingsLayouts.Body>
@@ -271,7 +271,7 @@ export default function ServiceAccountsPage() {
         <SettingsLayouts.Header
           title={route.title}
           icon={route.icon}
-          description="Use service accounts to programmatically access AuroraChat API."
+          description="Use service accounts to programmatically access InovaChat API."
           separator
         />
         <SettingsLayouts.Body>
@@ -288,7 +288,7 @@ export default function ServiceAccountsPage() {
       <SettingsLayouts.Header
         title={route.title}
         icon={route.icon}
-        description="Use service accounts to programmatically access AuroraChat API."
+        description="Use service accounts to programmatically access InovaChat API."
         separator
       />
 
@@ -448,7 +448,7 @@ export default function ServiceAccountsPage() {
                   deleteTarget.api_key_name || "Unnamed"
                 }* (\`${
                   deleteTarget.api_key_display
-                }\`) will lose access to AuroraChat.`
+                }\`) will lose access to InovaChat.`
               )}
             </Text>
             <Text as="p" color="text-03">

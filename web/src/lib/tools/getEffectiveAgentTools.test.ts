@@ -25,7 +25,7 @@ const buildAgent = (
   overrides: Partial<MinimalPersonaSnapshot> = {}
 ): MinimalPersonaSnapshot => ({
   id: overrides.id ?? 0,
-  name: overrides.name ?? "Aurora-Agent",
+  name: overrides.name ?? "InovaChat-Agent",
   description: overrides.description ?? "",
   tools: overrides.tools ?? [],
   starter_messages: overrides.starter_messages ?? null,

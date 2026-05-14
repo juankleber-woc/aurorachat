@@ -117,7 +117,7 @@ function SettingsPopover({
           <LineItem
             key="help-faq"
             icon={SvgExternalLink}
-            href="https://aurorachat.app"
+            href="https://inovachat.app"
             target="_blank"
             rel="noopener noreferrer"
           >

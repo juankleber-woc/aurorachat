@@ -601,7 +601,7 @@ export default function WebSearchPage() {
       if (providerType === "onyx_web_crawler") {
         return {
           id: -1,
-          name: "AuroraChat Web Crawler",
+          name: "InovaChat Web Crawler",
           provider_type: "onyx_web_crawler",
           is_active: true,
           config: null,

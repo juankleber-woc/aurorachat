@@ -250,10 +250,10 @@ export default function AdminSidebar({ enableCloudSS }: AdminSidebarProps) {
               <Text text03 secondaryAction>
                 <a
                   className="underline"
-                  href="https://aurorachat.app"
+                  href="https://inovachat.app"
                   target="_blank"
                 >
-                  AuroraChat
+                  InovaChat
                 </a>
               </Text>
               <Text text03 secondaryBody>

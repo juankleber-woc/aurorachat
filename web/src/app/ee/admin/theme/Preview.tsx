@@ -133,7 +133,7 @@ function PreviewStart({
             {(logoDisplayStyle === "logo_and_name" ||
               logoDisplayStyle === "name_only") && (
               <Truncated mainUiAction text04 nowrap>
-                {applicationDisplayName || "AuroraChat"}
+                {applicationDisplayName || "InovaChat"}
               </Truncated>
             )}
           </div>
